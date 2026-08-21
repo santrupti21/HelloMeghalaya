@@ -25,10 +25,14 @@ struct CatalogTabsData: Decodable {
 
 struct CatalogTab: Decodable {
     let displayTitle: String
-    
+    let friendlyID: String
+    let homeLink: String
+    let listID: String
 
     enum CodingKeys: String, CodingKey {
         case displayTitle = "display_title"
+        case friendlyID = "friendly_id"
+        case homeLink = "home_link"
+        case listID = "list_id"
     }
 }
-

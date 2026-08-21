@@ -13,6 +13,8 @@ final class HomeSliderCell: UICollectionViewCell {
     
     private var imageTask: Task<Void, Never>?
     
+    private let placeholderImage = UIImage(named: "imagePlaceholder16x9")
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -49,7 +51,7 @@ final class HomeSliderCell: UICollectionViewCell {
         viewModel: HomeViewModel
     ) {
         imageTask?.cancel()
-        imageView.image = nil
+        imageView.image = placeholderImage
 
         guard
             let imageURLString = item.thumbnails.large16_9?.url,
@@ -79,9 +81,7 @@ final class HomeSliderCell: UICollectionViewCell {
             }
         }
     }
-        
-    
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -90,6 +90,5 @@ final class HomeSliderCell: UICollectionViewCell {
         imageTask = nil
         imageView.image = nil
     }
-    
-    
+
 }

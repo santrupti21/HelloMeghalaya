@@ -30,9 +30,20 @@ final class HomeViewModel {
 
     private let catalogTabsService = CatalogTabsService()
     private let homeService = HomeService()
-    private let imageService = ImageService()
+    private let imageService: ImageService
+    private let imageCache: ImageCache
+    
+    func clearImageCache() {
+        imageCache.clear()
+    }
 
     weak var delegate: HomeViewModelDelegate?
+    
+    init() {
+        let imageCache = ImageCache()
+        self.imageCache = imageCache
+        self.imageService = ImageService(imageCache: imageCache)
+    }
 
     func fetchTabs() {
 

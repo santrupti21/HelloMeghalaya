@@ -21,7 +21,7 @@ final class NavigationBarView: UIView {
 
     private var selectedIndex = 0
     
-    var onTabSelected:(() -> Void)?
+    var onTabSelected:((CatalogTab) -> Void)?
 
 
     override init(frame: CGRect) {
@@ -269,7 +269,8 @@ extension NavigationBarView: UICollectionViewDelegate {
 
         collectionView.reloadData()
         
-        onTabSelected?()
+        let selectedTab = tabs[indexPath.item]
+        onTabSelected?(selectedTab)
        
     }
     

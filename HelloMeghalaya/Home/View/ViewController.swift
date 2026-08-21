@@ -83,6 +83,17 @@ final class ViewController: UIViewController {
             ])
         
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        viewModel.clearImageCache()
+    }
+    
+    func clearImageCache() {
+        viewModel.clearImageCache()
+    }
+
 
 }
 

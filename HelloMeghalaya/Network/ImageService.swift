@@ -10,7 +10,18 @@ import UIKit
 
 final class ImageService {
     
+    private let imageCache: ImageCache
+    
+    init(imageCache: ImageCache) {
+        self.imageCache = imageCache
+    }
+    
     func fetchImage(from url: URL) async throws -> UIImage {
+        
+        if let cachedImage = imageCache.image(for: url){
+            return cachedImage
+        }
+        
         let (data, response) = try await URLSession.shared.data(from: url)
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -24,6 +35,8 @@ final class ImageService {
         guard let image = UIImage(data: data) else {
             throw APIError.invalidResponse
         }
+        
+        imageCache.setImage(image, for: url)
         
         return image
     }

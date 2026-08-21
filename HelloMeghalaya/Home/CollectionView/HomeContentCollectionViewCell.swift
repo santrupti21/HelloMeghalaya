@@ -25,6 +25,10 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
             multiplier: 3.0 / 2.0
         )
     
+    private let landscapePlaceholder = UIImage(named: "imagePlaceholder16x9")
+    private let portraitPlaceholder = UIImage(named: "imagePlaceholder2x3")
+    
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -91,8 +95,13 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
         viewModel: HomeViewModel
     ) {
         imageTask?.cancel()
+        
+        if layoutType == "t_2_3_movie" {
+            imageView.image = portraitPlaceholder
+        } else {
+            imageView.image = landscapePlaceholder
+        }
 
-        imageView.image = nil
         titleLabel.text = item.displayTitle
 
         if layoutType == "t_2_3_movie" {
@@ -144,7 +153,6 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
 
         imageTask?.cancel()
         imageTask = nil
-
         imageView.image = nil
         titleLabel.text = nil
     }
