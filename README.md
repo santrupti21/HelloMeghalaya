@@ -13,6 +13,7 @@ Contains the Home screen implementation.
 - View
   - ViewController
   - NavigationBarView
+  - MainTabBarController
 
 - ViewModel
   - HomeViewModel
@@ -31,11 +32,22 @@ Contains the Home screen implementation.
   - HomeContentCollectionViewCell
 
 ### Network
-Contains API and image-loading services.
+Contains API, image-loading and caching services.
 
 - CatalogTabService
 - HomeService
 - ImageService
+
+### Cache
+Contains image caching implementation.
+
+- ImageCache
+
+### Assets
+Contains image assets and placeholders used by the application.
+
+- imagePlaceholder16x9
+- imagePlaceholder2x3
 
 ## Architecture
 
@@ -65,6 +77,22 @@ The collection view cards support different layouts such as:
 
 - 16:9 landscape
 - 2:3 portrait
+
+## Image Loading & Caching
+
+Images are loaded asynchronously using `ImageService`.
+
+`ImageService` uses `ImageCache` to cache downloaded images using `NSCache`.
+
+The cache:
+
+- Stores images using their URL as the key
+- Has a maximum count limit
+- Has a maximum memory cost limit
+- Returns cached images before making a network request
+- Can be cleared when required
+
+Placeholder images are displayed while images are being loaded or when an image URL is unavailable.
 
 ## Git Workflow
 
