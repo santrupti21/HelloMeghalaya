@@ -9,9 +9,9 @@ import Foundation
 
 final class HomeService {
     
-    func fetchHome() async throws -> [HomeSection] {
+    func fetchCatalog(type: CatalogType, page: Int) async throws -> [HomeSection] {
         
-        guard let url = endpoint else {
+        guard let url = endpoint(type: type, page: page) else {
             throw APIError.invalidURL
         }
         
@@ -38,9 +38,9 @@ final class HomeService {
 }
     private extension HomeService {
         
-        var endpoint: URL? {
+        func endpoint(type: CatalogType, page: Int) -> URL? {
             
-            guard var components = URLComponents(string: APIConfiguration.baseURL + APIEndpoint.home.path) else {
+            guard var components = URLComponents(string: APIConfiguration.baseURL + APIEndpoint.catalog(type: type).path) else {
                 return nil
             }
         
@@ -68,12 +68,12 @@ final class HomeService {
 
                    URLQueryItem(
                        name: "page_size",
-                       value: "20"
+                       value: "5"
                    ),
 
                    URLQueryItem(
                        name: "page",
-                       value: "0"
+                       value: "\(page)"
                    ),
 
                    URLQueryItem(

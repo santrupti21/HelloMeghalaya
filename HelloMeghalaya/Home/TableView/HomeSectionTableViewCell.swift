@@ -112,12 +112,13 @@ final class HomeSectionTableViewCell: UITableViewCell {
 
         titleLabel.text = section.displayTitle
         items = section.catalogListItems ?? []
+        
+        layoutType = section.catalogListItems?.first?.catalogObject?.layoutType
+        
+        print("SECTION:", section.displayTitle)
+            print("LAYOUT TYPE:",layoutType ?? "nil")
 
-        if section.displayTitle == "Snippets" {
-            layoutType = "t_2_3_movie"
-        } else {
-            layoutType = section.catalogObject?.layoutType ?? "16:9"
-        }
+
 
         collectionView.reloadData()
     }

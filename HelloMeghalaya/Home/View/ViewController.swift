@@ -23,6 +23,20 @@ final class ViewController: UIViewController {
         
         viewModel.delegate = self
         
+        navigationBarView.onTabSelected = { [weak self] tab in
+            
+            guard let self else { return }
+            
+            guard let catalogType = CatalogType(friendlyID: tab.friendlyID) else {
+                return
+            }
+            print("Selected catalog:", catalogType)
+            
+            self.viewModel.changeCatalogType(
+                to: catalogType
+            )
+        }
+        
         homeTableView.dataSource = self
         homeTableView.delegate = self
         
@@ -34,27 +48,27 @@ final class ViewController: UIViewController {
         setupHomeTableView()
         
         viewModel.fetchHomeScreen()
-
+        
     }
     
     private func setupNavigationBar() {
         view.addSubview(navigationBarView)
-
+        
         navigationBarView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         NSLayoutConstraint.activate([
             navigationBarView.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor
             ),
-
+            
             navigationBarView.trailingAnchor.constraint(
                 equalTo: view.trailingAnchor
             ),
-
+            
             navigationBarView.topAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.topAnchor
             )
-
+            
         ])
     }
     
@@ -68,19 +82,19 @@ final class ViewController: UIViewController {
         homeTableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-                homeTableView.leadingAnchor.constraint(
-                    equalTo: view.leadingAnchor
-                ),
-                homeTableView.trailingAnchor.constraint(
-                    equalTo: view.trailingAnchor
-                ),
-                homeTableView.topAnchor.constraint(
-                    equalTo: navigationBarView.bottomAnchor
-                ),
-                homeTableView.bottomAnchor.constraint(
-                    equalTo: view.bottomAnchor
-                )
-            ])
+            homeTableView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor
+            ),
+            homeTableView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor
+            ),
+            homeTableView.topAnchor.constraint(
+                equalTo: navigationBarView.bottomAnchor
+            ),
+            homeTableView.bottomAnchor.constraint(
+                equalTo: view.bottomAnchor
+            )
+        ])
         
     }
     
@@ -93,8 +107,8 @@ final class ViewController: UIViewController {
     func clearImageCache() {
         viewModel.clearImageCache()
     }
-
-
+    
+    
 }
 
 extension ViewController: HomeViewModelDelegate {
@@ -107,8 +121,15 @@ extension ViewController: HomeViewModelDelegate {
         print("Home Error:", error)
     }
     
-    func homeViewModel(_ viewModel: HomeViewModel, didUpdateHomeSections sections: [HomeSection]) {
+    func homeViewModel(
+        _ viewModel: HomeViewModel,
+        didUpdateHomeSections sections: [HomeSection]
+    ) {
+
         homeSections = sections
+
+        print("Sections received:", sections.count)
+
         homeTableView.reloadData()
     }
     
@@ -165,40 +186,60 @@ extension ViewController: UITableViewDataSource {
 
 
 extension ViewController: UITableViewDelegate {
-//Table view row height
+    //Table view row height
     func tableView(
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-
+        
         if indexPath.row == 0 {
             return (tableView.bounds.width * 9.0 / 16.0) + 40
         }
-
+        
         let section = homeSections[indexPath.row - 1]
-
+        
         let collectionWidth = tableView.bounds.width - 20
         let cardWidth = collectionWidth * 0.55
-
-        let layoutType: String
-
-        if section.displayTitle == "Snippets" {
-            layoutType = "t_2_3_movie"
-        } else {
-            layoutType = section.catalogObject?.layoutType ?? "16:9"
-        }
-
+        
+        let layoutType = section.catalogListItems?.first?.catalogObject?.layoutType
+        
         let imageHeight: CGFloat
-
+        
         if layoutType == "t_2_3_movie" {
             imageHeight = cardWidth * 3.0 / 2.0
         } else {
             imageHeight = cardWidth * 9.0 / 16.0
         }
-
+        
         let collectionHeight = imageHeight + 8 + 40
-
+        
         return 10 + 30 + 10 + collectionHeight + 10
+    }
+        
+    func scrollViewDidScroll(
+        _ scrollView: UIScrollView
+    ) {
+
+        let contentHeight = scrollView.contentSize.height
+        let currentOffset = scrollView.contentOffset.y
+        let visibleHeight = scrollView.bounds.height
+
+        // Don't paginate if the table isn't actually scrollable
+        guard contentHeight > visibleHeight else {
+            return
+        }
+
+        let threshold: CGFloat = 300
+
+        let reachedThreshold =
+            currentOffset + visibleHeight >=
+            contentHeight - threshold
+
+        guard reachedThreshold else {
+            return
+        }
+
+        viewModel.loadNextPage()
     }
 }
 

@@ -20,12 +20,49 @@ enum APIConfiguration {
 
     static let baseURL =
         "https://preprodapi.hellomeghalaya.in"
+    
+    static let region = Bundle.main.object(forInfoDictionaryKey: "APIRegion") as? String ?? ""
+}
+
+enum CatalogType {
+    case home
+    case movies
+    case music
+    case infotainment
+    case hmOriginals
+    case liveEvents
+    
+    init?(friendlyID: String) {
+        switch friendlyID.lowercased() {
+        case "home-tab":
+            self = .home
+
+        case "movies-tab":
+            self = .movies
+            
+        case "music-tab":
+            self = .music
+            
+        case "creators-tab":
+            self = .infotainment
+            
+        case "hm-originals-tab":
+            self = .hmOriginals
+
+        case "live-events-tab":
+            self = .liveEvents
+            
+        default:
+            return nil
+            
+        }
+    }
 }
 
 enum APIEndpoint {
 
     case catalogTabs
-    case home
+    case catalog(type: CatalogType)
 
     var path: String {
 
@@ -34,8 +71,28 @@ enum APIEndpoint {
         case .catalogTabs:
             return "/catalog_lists/catalog-tabs.gzip"
             
-        case .home:
-            return "/catalog_lists/home.gzip"
+        case .catalog(let type):
+            
+            switch type {
+            case .home:
+                return "/catalog_lists/home.gzip"
+                
+            case .movies:
+                return "/catalog_lists/movies.gzip"
+                
+            case .music:
+                return "/catalog_lists/music.gzip"
+
+            case .infotainment:
+                return "/catalog_lists/creators.gzip"
+                
+            case .hmOriginals:
+                return "/catalog_lists/hm-originals.gzip"
+
+            case .liveEvents:
+                return "/catalog_lists/live-events.gzip"
+                
+            }
             
         }
     }
@@ -94,7 +151,7 @@ private extension CatalogTabsService {
 
             URLQueryItem(
                 name: "region",
-                value: "IN"
+                value: APIConfiguration.region
             ),
 
             URLQueryItem(

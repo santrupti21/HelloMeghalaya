@@ -24,13 +24,12 @@ struct HomeSection: Decodable {
     
     let displayTitle: String
     let catalogListItems: [HomeItem]?
-    let catalogObject: CatalogObject?
     
     enum CodingKeys: String, CodingKey {
         
         case displayTitle = "display_title"
         case catalogListItems = "catalog_list_items"
-        case catalogObject = "catalog_object"
+
     }
     
 }
@@ -40,11 +39,13 @@ struct HomeItem: Decodable {
     let displayTitle: String
     let contentID: String
     let thumbnails: HomeThumbnails
+    let catalogObject: CatalogObject?
     
     enum CodingKeys: String, CodingKey {
         case displayTitle = "display_title"
         case contentID = "content_id"
         case thumbnails
+        case catalogObject = "catalog_object"
     }
     
 }

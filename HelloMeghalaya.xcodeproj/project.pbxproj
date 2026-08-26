@@ -79,6 +79,7 @@
 				FFEE7BD4302C7B5C00A55FA2 /* ViewController.swift */,
 				FFEE7BEA302C7C5B00A55FA2 /* NavigationBarView.swift */,
 				FFBCA81B3037201D00E9C206 /* MainTabBarController.swift */,
+				FF1DB0AC3033352D000D1526 /* ViewModel */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -164,7 +165,6 @@
 				FF1DB0AB30333500000D1526 /* View */,
 				FFBCA8193037056100E9C206 /* TableView */,
 				FFBCA81A3037058000E9C206 /* CollectionView */,
-				FF1DB0AC3033352D000D1526 /* ViewModel */,
 				FFEE7BEC302C7CC500A55FA2 /* Models */,
 			);
 			path = Home;
