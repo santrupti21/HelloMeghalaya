@@ -17,6 +17,10 @@ final class ViewController: UIViewController {
     private var homeSections: [HomeSection] = []
     private var homeSliderItems: [HomeItem] = []
     
+    private var selectedTab: CatalogTab?
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
@@ -24,17 +28,12 @@ final class ViewController: UIViewController {
         viewModel.delegate = self
         
         navigationBarView.onTabSelected = { [weak self] tab in
-            
-            guard let self else { return }
-            
-            guard let catalogType = CatalogType(friendlyID: tab.friendlyID) else {
+            guard let self else {
                 return
             }
-            print("Selected catalog:", catalogType)
-            
-            self.viewModel.changeCatalogType(
-                to: catalogType
-            )
+
+            self.selectedTab = tab
+            self.viewModel.changeCatalogTab(tab)
         }
         
         homeTableView.dataSource = self
@@ -114,6 +113,14 @@ final class ViewController: UIViewController {
 extension ViewController: HomeViewModelDelegate {
     func homeViewModel(_ viewModel: HomeViewModel, didUpdateTabs tabs: [CatalogTab]) {
         navigationBarView.updateTabs(tabs)
+        
+        guard selectedTab == nil,
+              let firstTab = tabs.first else {
+            return
+        }
+        
+        selectedTab = firstTab
+        viewModel.changeCatalogTab(firstTab)
     }
     
     
@@ -133,8 +140,12 @@ extension ViewController: HomeViewModelDelegate {
         homeTableView.reloadData()
     }
     
-    func homeViewModel(_ viewModel: HomeViewModel, didUpdateHomeSlider items: [HomeItem]) {
+    func homeViewModel(
+        _ viewModel: HomeViewModel,
+        didUpdateHomeSlider items: [HomeItem]
+    ) {
         homeSliderItems = items
+
         homeTableView.reloadData()
     }
 
@@ -160,7 +171,10 @@ extension ViewController: UITableViewDataSource {
                 return UITableViewCell()
             }
 
-            cell.configure(with: homeSliderItems, viewModel: viewModel)
+            cell.configure(
+                with: homeSliderItems,
+                viewModel: viewModel
+            )
 
             return cell
         }
@@ -176,60 +190,105 @@ extension ViewController: UITableViewDataSource {
 
         let section = homeSections[indexPath.row - 1]
 
-        cell.configure(with: section, viewModel: viewModel)
+        //Aroow button
+        cell.configure(with: section, viewModel: viewModel) { [weak self] in
 
+            guard let self else {
+                return
+            }
+            
+            //DI fron category vc
+            let categoryViewController = CategoryViewController(
+                section: section,
+                friendlyID: section.friendlyID,
+                viewModel: self.viewModel
+            )
+
+            self.navigationController?.pushViewController(
+                categoryViewController,
+                animated: true
+            )
+        }
         return cell
     }
-    
-    
 }
 
 
 extension ViewController: UITableViewDelegate {
     //Table view row height
-    func tableView(
+   func tableView(
         _ tableView: UITableView,
         heightForRowAt indexPath: IndexPath
     ) -> CGFloat {
-        
+
+        // Home banner
         if indexPath.row == 0 {
-            return (tableView.bounds.width * 9.0 / 16.0) + 40
+            let width = tableView.bounds.width
+            let bannerHeight = width * 9.0 / 16.0
+
+            return bannerHeight + 40
         }
-        
+
         let section = homeSections[indexPath.row - 1]
-        
+
+        // Same width used by HomeSectionTableViewCell
         let collectionWidth = tableView.bounds.width - 20
         let cardWidth = collectionWidth * 0.55
-        
-        let layoutType = section.catalogListItems?.first?.catalogObject?.layoutType
-        
+
+        let layoutType =
+            section.catalogListItems?
+                .first?
+                .catalogObject?
+                .layoutType
+
         let imageHeight: CGFloat
-        
+
         if layoutType == "t_2_3_movie" {
             imageHeight = cardWidth * 3.0 / 2.0
         } else {
             imageHeight = cardWidth * 9.0 / 16.0
         }
+
+        let titleFont = UIFont.systemFont(ofSize: 14, weight: .medium)
+        let titleHeight = titleFont.lineHeight
+        let imageTitleSpacing = titleFont.lineHeight * 0.5
+
+        let collectionHeight = imageHeight + imageTitleSpacing + titleHeight
         
-        let collectionHeight = imageHeight + 8 + 40
-        
-        return 10 + 30 + 10 + collectionHeight + 10
+        let titleLabelFont = UIFont.systemFont(
+               ofSize: 20,
+               weight: .semibold
+           )
+
+           let titleLabelHeight = titleLabelFont.lineHeight
+
+           let verticalSpacing = titleLabelFont.lineHeight * 0.5
+
+           return
+               titleLabelHeight
+               + verticalSpacing
+               + collectionHeight
+               + verticalSpacing
     }
         
     func scrollViewDidScroll(
         _ scrollView: UIScrollView
     ) {
 
+        // Make sure this is the main table view
+        guard scrollView === homeTableView else {
+            return
+        }
+
         let contentHeight = scrollView.contentSize.height
         let currentOffset = scrollView.contentOffset.y
         let visibleHeight = scrollView.bounds.height
 
-        // Don't paginate if the table isn't actually scrollable
         guard contentHeight > visibleHeight else {
             return
         }
 
-        let threshold: CGFloat = 300
+        let threshold: CGFloat = 500
 
         let reachedThreshold =
             currentOffset + visibleHeight >=
@@ -238,7 +297,6 @@ extension ViewController: UITableViewDelegate {
         guard reachedThreshold else {
             return
         }
-
         viewModel.loadNextPage()
     }
 }

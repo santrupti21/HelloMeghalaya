@@ -19,9 +19,9 @@ final class NavigationBarView: UIView {
 
     private var tabs: [CatalogTab] = []
 
-    private var selectedIndex = 0
+    private var selectedIndex = 0 //keep track of which index is selected
     
-    var onTabSelected:((CatalogTab) -> Void)?
+    var onTabSelected:((CatalogTab) -> Void)? //closure
 
 
     override init(frame: CGRect) {
@@ -230,15 +230,13 @@ extension NavigationBarView: UICollectionViewDelegateFlowLayout {
             weight: .medium
         )
 
-  
-
-        let minimumWidths = tabs.map { tab in tab.displayTitle.size(withAttributes: [.font: font]).width + 40}
+  let minimumWidths = tabs.map { tab in tab.displayTitle.size(withAttributes: [.font: font]).width + 40}
 
         let minimumWidth = minimumWidths[indexPath.item]
 
 
         let totalMinimumWidth = minimumWidths.reduce(0, +)
-
+        //start from 0-> add all vallues
 
         let spacing = CGFloat(max(tabs.count - 1, 0)) * 10
 
@@ -250,10 +248,10 @@ extension NavigationBarView: UICollectionViewDelegateFlowLayout {
 
             let extraWidth = (availableWidth - totalMinimumWidth) / CGFloat(tabs.count)
 
-            return CGSize(width: minimumWidth + extraWidth, height: 45)
+            return CGSize(width: minimumWidth + extraWidth, height: font.lineHeight + 20)
         }
 
-        return CGSize(width: minimumWidth, height: 45)
+        return CGSize(width: minimumWidth, height: font.lineHeight + 20)
     }
 }
 

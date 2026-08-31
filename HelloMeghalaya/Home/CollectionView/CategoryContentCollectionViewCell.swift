@@ -1,33 +1,34 @@
 //
-//  HomeContentCellCollectionViewCell.swift
+//  CategoryContentCollectionViewCell.swift
 //  HelloMeghalaya
 //
-//  Created by SaranyuMac1 on 18/08/26.
+//  Created by SaranyuMac1 on 26/08/26.
 //
 
 import UIKit
 
-final class HomeContentCollectionViewCell: UICollectionViewCell {
+final class CategoryContentCollectionViewCell: UICollectionViewCell {
     
     private let imageView = UIImageView()
-    private let titleLabel = UILabel()
-    private var imageTask: Task<Void, Never>? // Task prop
+    private let landscapePlaceholder =
+        UIImage(named: "imagePlaceholder16x9")
+
+    private let portraitPlaceholder =
+        UIImage(named: "imagePlaceholder2x3")
+    private var imageTask: Task<Void, Never>?
+    private var viewModel: HomeViewModel!
     
     private lazy var landscapeAspectRatioConstraint =
         imageView.heightAnchor.constraint(
             equalTo: imageView.widthAnchor,
             multiplier: 9.0 / 16.0
-        ) //a property whose initial value is not calculated until the first time it is accessed
+        )
 
     private lazy var portraitAspectRatioConstraint =
         imageView.heightAnchor.constraint(
             equalTo: imageView.widthAnchor,
             multiplier: 3.0 / 2.0
         )
-    
-    private let landscapePlaceholder = UIImage(named: "imagePlaceholder16x9")
-    private let portraitPlaceholder = UIImage(named: "imagePlaceholder2x3")
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -43,70 +44,49 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
 
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.backgroundColor = .darkGray
-
-        titleLabel.textColor = .white
-        titleLabel.font = .systemFont(ofSize: 16, weight: .medium)
-        titleLabel.numberOfLines = 2
+        imageView.layer.cornerRadius = 10
 
         contentView.addSubview(imageView)
-        contentView.addSubview(titleLabel)
 
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-
 
         NSLayoutConstraint.activate([
             imageView.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor
             ),
-
             imageView.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor
             ),
-
             imageView.topAnchor.constraint(
                 equalTo: contentView.topAnchor
             ),
-
-
-            titleLabel.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor
-            ),
-
-            titleLabel.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor
-            ),
-
-            titleLabel.topAnchor.constraint(
-                equalTo: imageView.bottomAnchor,
-                constant: 8
-            ),
-
-            titleLabel.bottomAnchor.constraint(
+            imageView.bottomAnchor.constraint(
                 equalTo: contentView.bottomAnchor
             )
         ])
     }
+    
     func configure(
         with item: HomeItem,
         layoutType: String?,
         viewModel: HomeViewModel
     ) {
+
+        self.viewModel = viewModel
+
         imageTask?.cancel()
-        
+
         if layoutType == "t_2_3_movie" {
+
             imageView.image = portraitPlaceholder
-        } else {
-            imageView.image = landscapePlaceholder
-        }
 
-        titleLabel.text = item.displayTitle
-
-        if layoutType == "t_2_3_movie" {
             landscapeAspectRatioConstraint.isActive = false
             portraitAspectRatioConstraint.isActive = true
+
         } else {
+
+            imageView.image = landscapePlaceholder
+
             portraitAspectRatioConstraint.isActive = false
             landscapeAspectRatioConstraint.isActive = true
         }
@@ -114,8 +94,11 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
         let imageURLString: String?
 
         if layoutType == "t_2_3_movie" {
+
             imageURLString = item.thumbnails.large2_3?.url
+
         } else {
+
             imageURLString = item.thumbnails.large16_9?.url
         }
 
@@ -124,11 +107,17 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
             let url = URL(string: imageURLString)
         else {
             return
-        }
-
+        }  //This safely unwraps the optional URL and converts it into a URL.
+       // If either is invalid, the cell simply stops.
+        
+        
         imageTask = Task { [weak self] in
+
             do {
-                let image = try await viewModel.fetchImage(from: url)
+
+                let image = try await viewModel.fetchImage(
+                    from: url
+                )
 
                 guard !Task.isCancelled else {
                     return
@@ -139,15 +128,21 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
                 }
 
             } catch {
+
                 guard !Task.isCancelled else {
                     return
                 }
 
-                print("Image Loading failed:", error)
+                print(
+                    "Category image loading failed:",
+                    error
+                )
             }
         }
     }
+    
     override func prepareForReuse() {
+
         super.prepareForReuse()
 
         imageTask?.cancel()
@@ -157,15 +152,6 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
         portraitAspectRatioConstraint.isActive = false
 
         imageView.image = nil
-        titleLabel.text = nil
     }
-    
-    override func layoutSubviews() {
-        
-        super.layoutSubviews()
-        
-        contentView.layer.cornerRadius = 8
-        contentView.clipsToBounds = true
-    }
-    
+
 }

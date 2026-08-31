@@ -23,11 +23,15 @@ struct HomeData: Decodable {
 struct HomeSection: Decodable {
     
     let displayTitle: String
+    let friendlyID: String
+    let homeLink: String?
     let catalogListItems: [HomeItem]?
     
     enum CodingKeys: String, CodingKey {
         
         case displayTitle = "display_title"
+        case friendlyID = "friendly_id"
+        case homeLink = "home_link"
         case catalogListItems = "catalog_list_items"
 
     }

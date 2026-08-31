@@ -3,12 +3,16 @@ import UIKit
 final class HomeSectionTableViewCell: UITableViewCell {
 
     private let titleLabel = UILabel()
+    private let arrowButton = UIButton(type: .system)
     private let collectionView: UICollectionView
 
+    //Data Properties
     private var items: [HomeItem] = []
     private var layoutType: String?
     private var viewModel: HomeViewModel!
+
     
+    var onArrowTapped: (() -> Void)? //closure
 
     override init(
         style: UITableViewCell.CellStyle,
@@ -45,6 +49,11 @@ final class HomeSectionTableViewCell: UITableViewCell {
             ofSize: 20,
             weight: .semibold
         )
+        
+        arrowButton.setImage(UIImage(systemName: "chevron.right"), for: .normal)
+        arrowButton.tintColor = .systemGreen
+        
+        arrowButton.addTarget(self, action: #selector(arrowButtonTapped), for: .touchUpInside)
 
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
@@ -58,9 +67,11 @@ final class HomeSectionTableViewCell: UITableViewCell {
 
         contentView.addSubview(titleLabel)
         contentView.addSubview(collectionView)
+        contentView.addSubview(arrowButton)
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+        arrowButton.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
 
@@ -68,19 +79,32 @@ final class HomeSectionTableViewCell: UITableViewCell {
                 equalTo: contentView.leadingAnchor,
                 constant: 20
             ),
-
+            
             titleLabel.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor,
-                constant: -20
+                lessThanOrEqualTo: arrowButton.leadingAnchor,
+                constant: -10
             ),
-
+            
             titleLabel.topAnchor.constraint(
                 equalTo: contentView.topAnchor,
                 constant: 10
             ),
+            
+            arrowButton.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -20
+            ),
 
-            titleLabel.heightAnchor.constraint(
-                equalToConstant: 30
+            arrowButton.centerYAnchor.constraint(
+                equalTo: titleLabel.centerYAnchor
+            ),
+
+            arrowButton.widthAnchor.constraint(
+                equalToConstant: 40
+            ),
+
+            arrowButton.heightAnchor.constraint(
+                equalToConstant: 40
             ),
 
             collectionView.leadingAnchor.constraint(
@@ -103,10 +127,16 @@ final class HomeSectionTableViewCell: UITableViewCell {
             )
         ])
     }
+    
+    @objc private func arrowButtonTapped() {
+        print("Arrow Button Tapped")
+        onArrowTapped?()
+    }
 
     func configure(
         with section: HomeSection,
-        viewModel: HomeViewModel
+        viewModel: HomeViewModel,
+        onArrowTapped: @escaping () -> Void
     ) {
         self.viewModel = viewModel
 
@@ -115,11 +145,8 @@ final class HomeSectionTableViewCell: UITableViewCell {
         
         layoutType = section.catalogListItems?.first?.catalogObject?.layoutType
         
-        print("SECTION:", section.displayTitle)
-            print("LAYOUT TYPE:",layoutType ?? "nil")
-
-
-
+        self.onArrowTapped = onArrowTapped //store
+        
         collectionView.reloadData()
     }
    
@@ -156,7 +183,6 @@ extension HomeSectionTableViewCell: UICollectionViewDataSource {
 
         return cell
     }
-    
 }
 
 extension HomeSectionTableViewCell: UICollectionViewDelegateFlowLayout {
@@ -177,12 +203,20 @@ extension HomeSectionTableViewCell: UICollectionViewDelegateFlowLayout {
             imageHeight = width * 9.0 / 16.0
         }
 
-        let titleHeight: CGFloat = 40
-        let spacing: CGFloat = 8
+        let titleHeight = UIFont.systemFont(
+            ofSize: 14,
+            weight: .medium
+        ).lineHeight
+
+        let spacing = titleHeight * 0.5
+
+        let cellHeight = imageHeight + spacing + titleHeight
+
 
         return CGSize(
             width: width,
-            height: imageHeight + spacing + titleHeight - 1
+            height: cellHeight
         )
     }
+    
 }

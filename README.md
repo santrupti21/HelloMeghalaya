@@ -1,105 +1,55 @@
 # HelloMeghalaya
 
-HelloMeghalaya is an iOS application built using UIKit and MVVM architecture.
-
-## Project Structure
-
-### Apps
-Contains application lifecycle files.
-
-### Home
-Contains the Home screen implementation.
-
-- View
-  - ViewController
-  - NavigationBarView
-  - MainTabBarController
-
-- ViewModel
-  - HomeViewModel
-
-- Models
-  - HomeResponse
-  - CatalogTabResponse
-
-- TableView
-  - HomeBannerTableViewCell
-  - HomeSectionTableViewCell
-
-- CollectionView
-  - CatalogTabCell
-  - HomeSliderCell
-  - HomeContentCollectionViewCell
-
-### Network
-Contains API, image-loading and caching services.
-
-- CatalogTabService
-- HomeService
-- ImageService
-
-### Cache
-Contains image caching implementation.
-
-- ImageCache
-
-### Assets
-Contains image assets and placeholders used by the application.
-
-- imagePlaceholder16x9
-- imagePlaceholder2x3
+HelloMeghalaya is an iOS application built using **Swift and UIKit**.  
+The project follows the **MVVM architecture** and consumes catalog APIs to display tabs, banners, content sections, categories, and paginated content.
 
 ## Architecture
 
-The Home screen follows MVVM:
+The application follows:
 
-ViewController
-→ HomeViewModel
-→ Services
-→ API
+**View → ViewModel → Service → API**
 
-The ViewModel sends the received data back to the ViewController using a delegate.
+- **ViewController / Custom Views**
+  - Responsible for UI and user interaction.
+  - Displays data received from the ViewModel.
+  - Uses delegates and closures for communication.
 
-## UI Structure
+- **ViewModel**
+  - Acts as the middle layer between UI and services.
+  - Handles API calls and prepares data for the ViewController.
+  - Manages catalog tabs, home sections, slider data, pagination, and image loading.
 
-The Home screen uses:
+- **Services**
+  - Responsible for network communication.
+  - Builds API URLs and performs API requests.
+  - Decodes JSON responses into models.
 
-UITableView
-→ Home Banner
-→ Home Sections
+## Main Features
 
-Each Home Section contains:
+### Home Screen
 
-UICollectionView
-→ Content Cards
+- Displays catalog tabs.
+- Loads the selected catalog.
+- Displays a banner/slider.
+- Displays multiple content sections.
+- Supports horizontal scrolling for content cards.
+- Supports different image layouts:
+  - 16:9 landscape
+  - 2:3 portrait
 
-The collection view cards support different layouts such as:
+### Catalog Tabs
 
-- 16:9 landscape
-- 2:3 portrait
+Tabs are loaded from the catalog-tabs API.
 
-## Image Loading & Caching
+When a tab is selected:
 
-Images are loaded asynchronously using `ImageService`.
-
-`ImageService` uses `ImageCache` to cache downloaded images using `NSCache`.
-
-The cache:
-
-- Stores images using their URL as the key
-- Has a maximum count limit
-- Has a maximum memory cost limit
-- Returns cached images before making a network request
-- Can be cleared when required
-
-Placeholder images are displayed while images are being loaded or when an image URL is unavailable.
-
-## Git Workflow
-
-After making changes:
-
-```bash
-git status
-git add .
-git commit -m "Describe your change"
-git push
+```text
+CatalogTab
+    ↓
+homeLink
+    ↓
+HomeViewModel
+    ↓
+HomeService
+    ↓
+Catalog API

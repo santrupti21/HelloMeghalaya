@@ -12,7 +12,7 @@ final class ImageCache {
     private let cache = NSCache<NSURL, UIImage>()
     
     init() {
-        cache.countLimit = 50
+        cache.countLimit = 50 //obj
         cache.totalCostLimit = 50 * 1024 * 1024 //50mb == 52,428,800 bytes
     }
     

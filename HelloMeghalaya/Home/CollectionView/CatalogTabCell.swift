@@ -74,6 +74,8 @@ final class CatalogTabCell: UICollectionViewCell {
         }
     }
 
+    
+    //UIKit whenever the view needs to lay out or update the position/size of its subviews.
     override func layoutSubviews() {
 
         super.layoutSubviews()

@@ -18,11 +18,14 @@ final class MainTabBarController: UITabBarController {
     
     private func setupTabs() {
         let homeViewController = ViewController()
+        let homeNavigationController = UINavigationController(rootViewController: homeViewController)
+        homeNavigationController.setNavigationBarHidden(true, animated: false) // Hiding the nav bar
+        
         let trailerViewController = UIViewController()
         let downloadsViewController = UIViewController()
         let moreViewController = UIViewController()
         
-        homeViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
+        homeNavigationController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
         
         trailerViewController.tabBarItem = UITabBarItem(title: "Trailers", image: UIImage(systemName: "play.rectangle"), selectedImage: UIImage(systemName: "play.rectangle.fill"))
         
@@ -30,7 +33,7 @@ final class MainTabBarController: UITabBarController {
         
         moreViewController.tabBarItem = UITabBarItem(title: "More", image: UIImage(systemName: "square.grid.2x2"), selectedImage: UIImage(systemName: "square.grid.2x2.fill"))
         
-        viewControllers = [homeViewController, trailerViewController, downloadsViewController, moreViewController]
+        viewControllers = [homeNavigationController, trailerViewController, downloadsViewController, moreViewController]
     }
     
     private func setupTabBarAppearance() {

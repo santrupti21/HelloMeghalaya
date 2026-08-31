@@ -10,6 +10,7 @@ import UIKit
 
 final class ImageService {
     
+    //di-> img service depends on imgcache
     private let imageCache: ImageCache
     
     init(imageCache: ImageCache) {

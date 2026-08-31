@@ -87,14 +87,17 @@ final class HomeBannerTableViewCell: UITableViewCell {
            ])
        }
     
-    func configure(with items: [HomeItem], viewModel: HomeViewModel) {
+    func configure(
+        with items: [HomeItem],
+        viewModel: HomeViewModel
+    ) {
         self.items = items
         self.viewModel = viewModel
-        
+
         pageControl.numberOfPages = items.count
         pageControl.currentPage = 0
+
         collectionView.reloadData()
-        
         startAutoScroll()
     }
     
@@ -153,8 +156,12 @@ extension HomeBannerTableViewCell: UICollectionViewDataSource {
         }
         
         let item = items[indexPath.item]
-        cell.configure(with: item, viewModel: viewModel)
-        
+
+        cell.configure(
+            with: item,
+            viewModel: viewModel
+        )
+
         return cell
     }
 
@@ -162,8 +169,18 @@ extension HomeBannerTableViewCell: UICollectionViewDataSource {
 }
 
 extension HomeBannerTableViewCell: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: collectionView.bounds.width * 9.0 / 16.0)
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+
+        let width = collectionView.bounds.width
+
+        return CGSize(
+            width: width,
+            height: width * 9.0 / 16.0
+        )
     }
 }
 

@@ -27,6 +27,8 @@
 		FFEE7BE7302C7BFC00A55FA2 /* CatalogTabService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFEE7BE6302C7BFC00A55FA2 /* CatalogTabService.swift */; };
 		FFEE7BE9302C7C2800A55FA2 /* CatalogTabCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFEE7BE8302C7C2800A55FA2 /* CatalogTabCell.swift */; };
 		FFEE7BEB302C7C5B00A55FA2 /* NavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFEE7BEA302C7C5B00A55FA2 /* NavigationBarView.swift */; };
+		FFFE820C303EB864003EA8D9 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFE820B303EB864003EA8D9 /* CategoryViewController.swift */; };
+		FFFE820E303ECA5F003EA8D9 /* CategoryContentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFFE820D303ECA5F003EA8D9 /* CategoryContentCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +54,8 @@
 		FFEE7BE6302C7BFC00A55FA2 /* CatalogTabService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogTabService.swift; sourceTree = "<group>"; };
 		FFEE7BE8302C7C2800A55FA2 /* CatalogTabCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogTabCell.swift; sourceTree = "<group>"; };
 		FFEE7BEA302C7C5B00A55FA2 /* NavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarView.swift; sourceTree = "<group>"; };
+		FFFE820B303EB864003EA8D9 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		FFFE820D303ECA5F003EA8D9 /* CategoryContentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryContentCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +83,7 @@
 				FFEE7BD4302C7B5C00A55FA2 /* ViewController.swift */,
 				FFEE7BEA302C7C5B00A55FA2 /* NavigationBarView.swift */,
 				FFBCA81B3037201D00E9C206 /* MainTabBarController.swift */,
+				FFFE820B303EB864003EA8D9 /* CategoryViewController.swift */,
 				FF1DB0AC3033352D000D1526 /* ViewModel */,
 			);
 			path = View;
@@ -107,6 +112,7 @@
 				FFEE7BE8302C7C2800A55FA2 /* CatalogTabCell.swift */,
 				FF21942B302F1AF70013AD8B /* HomeSliderCell.swift */,
 				FF6668B93034766900B6790D /* HomeContentCollectionViewCell.swift */,
+				FFFE820D303ECA5F003EA8D9 /* CategoryContentCollectionViewCell.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -268,6 +274,8 @@
 				FF219426302EF4BA0013AD8B /* HomeService.swift in Sources */,
 				FF6668B830345DCE00B6790D /* HomeSectionTableViewCell.swift in Sources */,
 				FFEE7BEB302C7C5B00A55FA2 /* NavigationBarView.swift in Sources */,
+				FFFE820C303EB864003EA8D9 /* CategoryViewController.swift in Sources */,
+				FFFE820E303ECA5F003EA8D9 /* CategoryContentCollectionViewCell.swift in Sources */,
 				FFEE7BE7302C7BFC00A55FA2 /* CatalogTabService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

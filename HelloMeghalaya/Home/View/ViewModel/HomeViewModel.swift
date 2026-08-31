@@ -28,65 +28,45 @@ protocol HomeViewModelDelegate: AnyObject {
 @MainActor
 final class HomeViewModel {
 
-    private let catalogTabsService = CatalogTabsService()
-    private let homeService = HomeService()
-
-    private let imageService: ImageService
+    private let catalogTabsService = CatalogTabsService()//tabs
+    private let homeService = HomeService()//home section items
+    private let imageService: ImageService //imgs
     private let imageCache: ImageCache
-    
-    private var catalogType: CatalogType
-    
-    private var sliderTitle: String {
-        switch catalogType {
-        case .home:
-            return "Home Slider"
-            
-        case .movies:
-            return "Movies Slider"
-            
-        case .music:
-             return "Music Slider"
 
-         case .infotainment:
-             return "Creators Slider"
-            
-        case .hmOriginals:
-               return "HM Originals banner"
-
-        case .liveEvents:
-               return "Live Events"
-        }
-    }
+    private var selectedTab: CatalogTab?// home, movies etc
 
     private var currentPage = 0
     private var isLoading = false
     private var hasMoreData = true
-    private var allSections: [HomeSection] = []
 
+
+    private var allSections: [HomeSection] = []// stores the section received from pagination
 
     weak var delegate: HomeViewModelDelegate?
 
-
-    init(catalogType: CatalogType = .home) {
-        
-        self.catalogType = catalogType
+    init() {
 
         let imageCache = ImageCache()
 
         self.imageCache = imageCache
+
         self.imageService = ImageService(
             imageCache: imageCache
         )
     }
+    
+    func fetchHomeScreen() {
+        fetchTabs()
+    }
+
 
     func clearImageCache() {
-
         imageCache.clear()
     }
 
 
     func fetchTabs() {
-
+        //concurrency
         Task { [weak self] in
 
             guard let self else {
@@ -95,12 +75,12 @@ final class HomeViewModel {
 
             do {
 
-                let tabs = try await catalogTabsService.fetchTabs()
+                let tabs = try await catalogTabsService.fetchTabs()// [CatalogTab]
 
                 delegate?.homeViewModel(
                     self,
                     didUpdateTabs: tabs
-                )
+                )//I received the tabs. Update the UI.
 
             } catch {
 
@@ -111,39 +91,51 @@ final class HomeViewModel {
             }
         }
     }
-    
-    func changeCatalogType(to type: CatalogType) {
-        catalogType = type
+
+
+    func changeCatalogTab(_ tab: CatalogTab) {
+
+        selectedTab = tab
 
         currentPage = 0
         isLoading = false
         hasMoreData = true
+
         allSections = []
+
         delegate?.homeViewModel(
-               self,
-               didUpdateHomeSections: []
-           )
+            self,
+            didUpdateHomeSections: []
+        )
 
-           delegate?.homeViewModel(
-               self,
-               didUpdateHomeSlider: []
-           )
+        // Clear previous banner
 
-           fetchCatalog()       
+        delegate?.homeViewModel(
+            self,
+            didUpdateHomeSlider: []
+        )
+
+        // Fetch selected tab
+
+        fetchCatalog()
     }
 
 
     func fetchCatalog() {
-        
+
+        guard selectedTab != nil else {
+            return
+        }
+
         currentPage = 0
         hasMoreData = true
         allSections = []
 
         loadCatalogPage(
-            page: currentPage,replaceData: true
+            page: currentPage,
+            replaceData: true
         )
     }
-
 
     private func loadCatalogPage(
         page: Int,
@@ -160,6 +152,7 @@ final class HomeViewModel {
 
         isLoading = true
 
+
         Task { [weak self] in
 
             guard let self else {
@@ -168,80 +161,114 @@ final class HomeViewModel {
 
             do {
 
-                print("Requesting page:", page)
-                
+                print("Requesting page:", page)                // Make sure a tab is selected
+
+                guard let selectedTab else {
+
+                    isLoading = false
+
+                    return
+                }
+                // Fetch API
+
                 let sections = try await homeService.fetchCatalog(
-                    type: catalogType,
+                    homeLink: selectedTab.homeLink,
                     page: page
                 )
-                
-                print("PAGE \(page) RAW SECTIONS:", sections.count)
-                
-                print("")
-                print("========== \(catalogType) ==========")
 
-                for section in sections {
-                    print("------------------------------------")
-                    print("SECTION:", section.displayTitle)
+                let homeSliderIndex: Int? =
+                 replaceData && !sections.isEmpty ? 0 : nil
 
-                    let layoutType =
-                        section.catalogListItems?.first?.catalogObject?.layoutType
-
-                    print("LAYOUT TYPE:", layoutType ?? "nil")
-                    print("ITEM COUNT:", section.catalogListItems?.count ?? 0)
-                }
 
                 if replaceData {
 
-                    if let homeSliderSection = sections.first(
-                        where: {
-                            $0.displayTitle == sliderTitle
-                        }
-                    ) {
+                    let homeSliderItems: [HomeItem]
 
-                        let homeSliderItems =
-                            homeSliderSection.catalogListItems ?? []
+                    if let homeSliderIndex {
 
-                        delegate?.homeViewModel(
-                            self,
-                            didUpdateHomeSlider: homeSliderItems
-                        )
+                        homeSliderItems =
+                            sections[
+                                homeSliderIndex
+                            ].catalogListItems ?? []
+
+                    } else {
+
+                        homeSliderItems = []
                     }
+
+
+                    print(
+                        "HOME BANNER ITEMS:",
+                        homeSliderItems.count
+                    )
+
+
+                    delegate?.homeViewModel(
+                        self,
+                        didUpdateHomeSlider:
+                            homeSliderItems
+                    )
                 }
 
-                let tableSections = sections.filter {
+                let tableSections =
+                    sections.enumerated().compactMap {
+//enumareated = index,value
+//compact = transforms items and removes nil results.
+                        index,
+                        section -> HomeSection? in
 
-                    $0.displayTitle != sliderTitle &&
-                    !($0.catalogListItems ?? []).isEmpty
-                }
+                        // Remove banner section
+
+                        guard index != homeSliderIndex else {
+                            return nil
+                        }
+                        // Remove empty sections
+
+                        guard !(
+                            section.catalogListItems ?? []
+                        ).isEmpty else {
+
+                            return nil
+                        }
+                        return section
+                    }
 
 
                 if replaceData {
+
+                    // First page
                     allSections = tableSections
 
                 } else {
 
+                    // Next pages
                     allSections = mergeSections(
                         existing: allSections,
                         new: tableSections
                     )
                 }
+                // Update current page
 
                 currentPage = page
 
-                if tableSections.isEmpty {
+                if sections.isEmpty {
 
                     hasMoreData = false
+
+                    print("No more home pages.")
                 }
 
                 delegate?.homeViewModel(
                     self,
-                    didUpdateHomeSections: allSections
+                    didUpdateHomeSections:
+                        allSections
                 )
+
 
                 isLoading = false
 
             } catch {
+
                 isLoading = false
 
                 delegate?.homeViewModel(
@@ -255,16 +282,16 @@ final class HomeViewModel {
     func loadNextPage() {
 
         guard !isLoading else {
+            print("Pagination skipped: already loading")
             return
         }
 
         guard hasMoreData else {
+            print("Pagination skipped: no more data")
             return
         }
 
         let nextPage = currentPage + 1
-        
-        print("Loading page:", nextPage)
 
         loadCatalogPage(
             page: nextPage,
@@ -279,40 +306,71 @@ final class HomeViewModel {
 
         var result = existing
 
+
         for newSection in new {
 
-
-            guard let existingIndex = result.firstIndex(
-                where: {
-                    $0.displayTitle ==
-                    newSection.displayTitle
-                }
-            ) else {
+            guard let existingIndex =
+                    result.firstIndex(
+                        where: {
+                            $0.displayTitle ==
+                            newSection.displayTitle
+                        }
+                    )
+            else {
 
                 result.append(newSection)
 
                 continue
             }
 
+            // Existing section
+
             let existingSection =
                 result[existingIndex]
-            
+
+
             let existingItems =
                 existingSection.catalogListItems ?? []
-            
+
+
             let newItems =
                 newSection.catalogListItems ?? []
+
 
             let mergedItems =
                 existingItems + newItems
 
-            result[existingIndex] = HomeSection(
-                displayTitle: existingSection.displayTitle,
-                catalogListItems: mergedItems
-            )        }
+
+            result[existingIndex] =
+                HomeSection(
+                    displayTitle:
+                        existingSection.displayTitle,
+
+                    friendlyID:
+                        existingSection.friendlyID,
+
+                    homeLink:
+                        existingSection.homeLink,
+
+                    catalogListItems:
+                        mergedItems
+                )
+        }
 
         return result
     }
+
+    func fetchCategoryPage(
+        homeLink: String,
+        page: Int
+    ) async throws -> [HomeItem] {
+
+        return try await homeService.fetchCategory(
+            homeLink: homeLink,
+            page: page
+        )
+    }
+
 
 
     func fetchImage(
@@ -322,12 +380,5 @@ final class HomeViewModel {
         try await imageService.fetchImage(
             from: url
         )
-    }
-
-    func fetchHomeScreen() {
-
-        fetchTabs()
-
-        fetchCatalog()
     }
 }
