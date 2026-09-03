@@ -21,8 +21,8 @@ final class NavigationBarView: UIView {
 
     private var selectedIndex = 0 //keep track of which index is selected
     
-    var onTabSelected:((CatalogTab) -> Void)? //closure
-
+    var onTabSelected: ((CatalogTab) -> Void)? //closure
+    var onSearchTapped: (() -> Void)?
 
     override init(frame: CGRect) {
 
@@ -109,7 +109,8 @@ final class NavigationBarView: UIView {
         searchButton.setImage(searchImage, for: .normal)
 
         searchButton.tintColor = .white
-
+        
+        searchButton.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
         addSubview(searchButton)
 
         searchButton.translatesAutoresizingMaskIntoConstraints =
@@ -172,6 +173,10 @@ final class NavigationBarView: UIView {
                 constant: -10
             )
         ])
+    }
+    
+    @objc private func searchButtonTapped() {
+        onSearchTapped?()
     }
 
 

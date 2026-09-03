@@ -53,7 +53,7 @@ final class HomeSliderCell: UICollectionViewCell {
         imageView.image = placeholderImage
 
         guard
-            let imageURLString = item.thumbnails.large16_9?.url,
+            let imageURLString = item.thumbnails?.large16_9?.url,
             let url = URL(string: imageURLString)
         else {
             return

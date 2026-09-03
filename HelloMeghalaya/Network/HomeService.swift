@@ -92,6 +92,49 @@ final class HomeService {
 
         return items
     }
+    
+    func search(
+        query: String,
+        page: Int,
+        pageSize: Int
+    ) async throws -> [HomeItem] {
+
+        guard let url = searchEndpoint(
+            query: query,
+            page: page,
+            pageSize: pageSize
+        ) else {
+            throw APIError.invalidURL
+        }
+
+        print("Calling Search API:", url)
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+
+        print("Search API Status Code:", httpResponse.statusCode)
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.httpError(
+                statusCode: httpResponse.statusCode
+            )
+        }
+
+        let responseModel = try JSONDecoder().decode(
+            SearchResponse.self,
+            from: data
+        )
+
+        print("Search API Decoding Successful")
+        print("Search Results:", responseModel.data.items.count)
+        print("Search Total Count:", responseModel.data.count)
+
+        return responseModel.data.items
+    }
+    
 }
 private extension HomeService {
 
@@ -121,7 +164,7 @@ private extension HomeService {
         components.queryItems = [
             URLQueryItem(
                 name: "auth_token",
-                value: "M4s2FZjgsdCKUyKgjJNE"
+                value: APIConfiguration.authToken
             ),
             URLQueryItem(
                 name: "region",
@@ -129,15 +172,15 @@ private extension HomeService {
             ),
             URLQueryItem(
                 name: "item_language",
-                value: ""
+                value: APIConfiguration.itemLanguage
             ),
             URLQueryItem(
                 name: "pagination",
-                value: "true"
+                value: APIConfiguration.pagination
             ),
             URLQueryItem(
                 name: "page_size",
-                value: "\(pageSize)"
+                value: APIConfiguration.npageSize
             ),
             URLQueryItem(
                 name: "page",
@@ -146,6 +189,58 @@ private extension HomeService {
             URLQueryItem(
                 name: "npage_size",
                 value: "10"
+            )
+        ]
+
+        return components.url
+    }
+    
+    private func searchEndpoint(
+        query: String,
+        page: Int,
+        pageSize: Int
+    ) -> URL? {
+
+        guard var components = URLComponents(
+            string: "https://stagingapi.dangalplay.com"
+        ) else {
+            return nil
+        }
+
+        components.path = APIEndpoint.search(
+            query: query,
+            page: page,
+            pageSize: pageSize
+        ).path
+
+        components.queryItems = [
+            URLQueryItem(
+                name: "auth_token",
+                value: APIConfiguration.searchAuthToken
+            ),
+            URLQueryItem(
+                name: "region",
+                value: APIConfiguration.searchRegion
+            ),
+            URLQueryItem(
+                name: "item_language",
+                value: APIConfiguration.searchItemLanguage
+            ),
+            URLQueryItem(
+                name: "filters",
+                value: APIConfiguration.searchFilters
+            ),
+            URLQueryItem(
+                name: "q",
+                value: query
+            ),
+            URLQueryItem(
+                name: "page",
+                value: "\(page)"
+            ),
+            URLQueryItem(
+                name: "page_size",
+                value: "\(pageSize)"
             )
         ]
 

@@ -95,11 +95,11 @@ final class CategoryContentCollectionViewCell: UICollectionViewCell {
 
         if layoutType == "t_2_3_movie" {
 
-            imageURLString = item.thumbnails.large2_3?.url
+            imageURLString = item.thumbnails?.large2_3?.url
 
         } else {
 
-            imageURLString = item.thumbnails.large16_9?.url
+            imageURLString = item.thumbnails?.large16_9?.url
         }
 
         guard

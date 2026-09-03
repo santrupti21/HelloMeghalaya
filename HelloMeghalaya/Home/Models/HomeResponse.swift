@@ -42,7 +42,7 @@ struct HomeItem: Decodable {
     
     let displayTitle: String
     let contentID: String
-    let thumbnails: HomeThumbnails
+    let thumbnails: HomeThumbnails?
     let catalogObject: CatalogObject?
     
     enum CodingKeys: String, CodingKey {
@@ -87,7 +87,7 @@ struct HomeThumbnails: Decodable {
 }
 
 struct HomeImage: Decodable {
-    let url: String
+    let url: String?
 }
 
 

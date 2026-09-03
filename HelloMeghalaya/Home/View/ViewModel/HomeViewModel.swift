@@ -370,8 +370,7 @@ final class HomeViewModel {
             page: page
         )
     }
-
-
+ 
 
     func fetchImage(
         from url: URL

@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		FF02B64A303821CD006FCBE7 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02B649303821CD006FCBE7 /* ImageCache.swift */; };
+		FF0866CB30468E060089BEA2 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0866CA30468E060089BEA2 /* SearchViewController.swift */; };
+		FF0866CD30469F4E0089BEA2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0866CC30469F4E0089BEA2 /* SearchViewModel.swift */; };
+		FF0866CF3046CA4E0089BEA2 /* SearchCollectionViewcell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0866CE3046CA4E0089BEA2 /* SearchCollectionViewcell.swift */; };
+		FF0900E83045A0150020A519 /* SearchResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0900E73045A0150020A519 /* SearchResponse.swift */; };
 		FF1DB0AA30332EE7000D1526 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1DB0A930332EE7000D1526 /* HomeViewModel.swift */; };
 		FF219424302EE4430013AD8B /* HomeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF219423302EE4430013AD8B /* HomeResponse.swift */; };
 		FF219426302EF4BA0013AD8B /* HomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF219425302EF4BA0013AD8B /* HomeService.swift */; };
@@ -33,6 +37,10 @@
 
 /* Begin PBXFileReference section */
 		FF02B649303821CD006FCBE7 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		FF0866CA30468E060089BEA2 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		FF0866CC30469F4E0089BEA2 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		FF0866CE3046CA4E0089BEA2 /* SearchCollectionViewcell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCollectionViewcell.swift; sourceTree = "<group>"; };
+		FF0900E73045A0150020A519 /* SearchResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResponse.swift; sourceTree = "<group>"; };
 		FF1DB0A930332EE7000D1526 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		FF219423302EE4430013AD8B /* HomeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeResponse.swift; sourceTree = "<group>"; };
 		FF219425302EF4BA0013AD8B /* HomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeService.swift; sourceTree = "<group>"; };
@@ -84,6 +92,7 @@
 				FFEE7BEA302C7C5B00A55FA2 /* NavigationBarView.swift */,
 				FFBCA81B3037201D00E9C206 /* MainTabBarController.swift */,
 				FFFE820B303EB864003EA8D9 /* CategoryViewController.swift */,
+				FF0866CA30468E060089BEA2 /* SearchViewController.swift */,
 				FF1DB0AC3033352D000D1526 /* ViewModel */,
 			);
 			path = View;
@@ -93,6 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				FF1DB0A930332EE7000D1526 /* HomeViewModel.swift */,
+				FF0866CC30469F4E0089BEA2 /* SearchViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -113,6 +123,7 @@
 				FF21942B302F1AF70013AD8B /* HomeSliderCell.swift */,
 				FF6668B93034766900B6790D /* HomeContentCollectionViewCell.swift */,
 				FFFE820D303ECA5F003EA8D9 /* CategoryContentCollectionViewCell.swift */,
+				FF0866CE3046CA4E0089BEA2 /* SearchCollectionViewcell.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -152,6 +163,7 @@
 			children = (
 				FFEE7BE4302C7BCA00A55FA2 /* CatalogTabResponse.swift */,
 				FF219423302EE4430013AD8B /* HomeResponse.swift */,
+				FF0900E73045A0150020A519 /* SearchResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -258,6 +270,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF0866CD30469F4E0089BEA2 /* SearchViewModel.swift in Sources */,
 				FF41066630356399005C1D28 /* HomeBannerTableViewCell.swift in Sources */,
 				FFEE7BE5302C7BCA00A55FA2 /* CatalogTabResponse.swift in Sources */,
 				FF02B64A303821CD006FCBE7 /* ImageCache.swift in Sources */,
@@ -273,8 +286,11 @@
 				FF219424302EE4430013AD8B /* HomeResponse.swift in Sources */,
 				FF219426302EF4BA0013AD8B /* HomeService.swift in Sources */,
 				FF6668B830345DCE00B6790D /* HomeSectionTableViewCell.swift in Sources */,
+				FF0866CB30468E060089BEA2 /* SearchViewController.swift in Sources */,
 				FFEE7BEB302C7C5B00A55FA2 /* NavigationBarView.swift in Sources */,
+				FF0900E83045A0150020A519 /* SearchResponse.swift in Sources */,
 				FFFE820C303EB864003EA8D9 /* CategoryViewController.swift in Sources */,
+				FF0866CF3046CA4E0089BEA2 /* SearchCollectionViewcell.swift in Sources */,
 				FFFE820E303ECA5F003EA8D9 /* CategoryContentCollectionViewCell.swift in Sources */,
 				FFEE7BE7302C7BFC00A55FA2 /* CatalogTabService.swift in Sources */,
 			);

@@ -19,9 +19,59 @@ enum APIError: Error {
 enum APIConfiguration {
 
     static let baseURL =
-        "https://preprodapi.hellomeghalaya.in"
-    
-    static let region = Bundle.main.object(forInfoDictionaryKey: "APIRegion") as? String ?? ""
+        Bundle.main.object(
+            forInfoDictionaryKey: "APIBaseURL"
+        ) as? String ?? ""
+
+    static let authToken =
+        Bundle.main.object(
+            forInfoDictionaryKey: "APIAuthtoken"
+        ) as? String ?? ""
+
+    static let region =
+        Bundle.main.object(
+            forInfoDictionaryKey: "APIRegion"
+        ) as? String ?? ""
+
+    static let itemLanguage =
+        Bundle.main.object(
+            forInfoDictionaryKey: "APIItemLanguage"
+        ) as? String ?? ""
+
+    static let pagination =
+        Bundle.main.object(
+            forInfoDictionaryKey: "APIPagination"
+        ) as? String ?? ""
+
+    static let npageSize =
+        Bundle.main.object(
+            forInfoDictionaryKey: "APINPageSize"
+        ) as? String ?? ""
+
+    static let searchBaseURL =
+        Bundle.main.object(
+            forInfoDictionaryKey: "SearchBaseURL"
+        ) as? String ?? ""
+
+    static let searchAuthToken =
+        Bundle.main.object(
+            forInfoDictionaryKey: "SearchAPIAuthtoken"
+        ) as? String ?? ""
+
+    static let searchRegion =
+        Bundle.main.object(
+            forInfoDictionaryKey: "SearchAPIRegion"
+        ) as? String ?? ""
+
+    static let searchItemLanguage =
+        Bundle.main.object(
+            forInfoDictionaryKey: "SearchAPIItemLanguage"
+        ) as? String ?? ""
+
+    static let searchFilters =
+        Bundle.main.object(
+            forInfoDictionaryKey: "SearchAPIFilters"
+        ) as? String ?? ""
 }
 
 
@@ -29,6 +79,7 @@ enum APIEndpoint {
 
     case catalogTabs
     case catalog(homeLink: String)
+    case search(query: String, page: Int, pageSize: Int)
 
     var path: String {
 
@@ -39,6 +90,9 @@ enum APIEndpoint {
 
         case .catalog(let homeLink):
             return homeLink
+            
+        case .search:
+            return "/search.gzip"
         }
     }
 }
@@ -88,38 +142,31 @@ private extension CatalogTabsService {
         }
 
         components.queryItems = [
-
             URLQueryItem(
                 name: "auth_token",
-                value: "M4s2FZjgsdCKUyKgjJNE"
+                value: APIConfiguration.authToken
             ),
-
             URLQueryItem(
                 name: "region",
                 value: APIConfiguration.region
             ),
-
             URLQueryItem(
                 name: "item_language",
-                value: ""
+                value: APIConfiguration.itemLanguage
             ),
-
             URLQueryItem(
                 name: "pagination",
-                value: "true"
+                value: APIConfiguration.pagination
             ),
-
             URLQueryItem(
                 name: "page",
                 value: "0"
             ),
-
             URLQueryItem(
                 name: "npage_size",
-                value: "10"
+                value: APIConfiguration.npageSize
             )
         ]
-
         return components.url
     }
 }

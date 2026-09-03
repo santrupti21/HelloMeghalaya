@@ -4,6 +4,26 @@
 <dict>
 	<key>APIRegion</key>
 	<string>IN</string>
+	<key>APIBaseURL</key>
+	<string>https://preprodapi.hellomeghalaya.in</string>
+	<key>APIAuthtoken</key>
+	<string>M4s2FZjgsdCKUyKgjJNE</string>
+	<key>APIItemLanguage</key>
+	<string></string>
+	<key>APIPagination</key>
+	<string>true</string>
+	<key>APINPageSize</key>
+	<string>10</string>
+	<key>SearchBaseURL</key>
+	<string>https://stagingapi.dangalplay.com</string>
+	<key>SearchAPIAuthtoken</key>
+	<string>eKJTE4SSzAyKq3wdTCZ9</string>
+	<key>SearchAPIRegion</key>
+	<string>IN</string>
+	<key>SearchAPIItemLanguage</key>
+	<string>en</string>
+	<key>SearchAPIFilters</key>
+	<string>category,all</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

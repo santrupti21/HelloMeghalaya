@@ -18,9 +18,7 @@ final class ViewController: UIViewController {
     private var homeSliderItems: [HomeItem] = []
     
     private var selectedTab: CatalogTab?
-    
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
@@ -34,7 +32,18 @@ final class ViewController: UIViewController {
 
             self.selectedTab = tab
             self.viewModel.changeCatalogTab(tab)
+        
         }
+        
+        navigationBarView.onSearchTapped = { [weak self] in
+            guard let self else {
+                return
+            }
+            let searchViewController = SearchViewController()
+            
+            self.navigationController?.pushViewController(searchViewController, animated: true)
+        }
+        
         
         homeTableView.dataSource = self
         homeTableView.delegate = self
@@ -96,7 +105,7 @@ final class ViewController: UIViewController {
         ])
         
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
@@ -148,8 +157,6 @@ extension ViewController: HomeViewModelDelegate {
 
         homeTableView.reloadData()
     }
-
-    
 }
 
 extension ViewController: UITableViewDataSource {
@@ -300,4 +307,3 @@ extension ViewController: UITableViewDelegate {
         viewModel.loadNextPage()
     }
 }
-
