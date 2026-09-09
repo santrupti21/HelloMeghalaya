@@ -88,6 +88,14 @@ extension MoreViewController: UITableViewDelegate {
             present(loginViewController, animated: true)
     
         }
+        if selectedItem.0 == "Content Language" {
+            print("Navigation Controller:", navigationController as Any)
+
+
+            let contentLanguageViewController = ContentLanguageViewController()
+            navigationController?.pushViewController(contentLanguageViewController, animated: true)
+            
+        }
         
         tableView.deselectRow(at: indexPath, animated: true)
     }

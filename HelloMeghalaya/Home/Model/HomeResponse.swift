@@ -40,7 +40,7 @@ struct HomeSection: Decodable {
 
 struct HomeItem: Decodable {
     
-    let displayTitle: String
+    let displayTitle: String?
     let contentID: String
     let thumbnails: HomeThumbnails?
     let catalogObject: CatalogObject?
