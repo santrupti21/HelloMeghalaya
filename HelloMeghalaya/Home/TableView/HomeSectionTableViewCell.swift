@@ -13,6 +13,7 @@ final class HomeSectionTableViewCell: UITableViewCell {
 
     
     var onArrowTapped: (() -> Void)? //closure
+    var onItemSelected: ((HomeItem) -> Void)?//imgs select
 
     override init(
         style: UITableViewCell.CellStyle,
@@ -32,8 +33,7 @@ final class HomeSectionTableViewCell: UITableViewCell {
 
         super.init(
             style: style,
-            reuseIdentifier: reuseIdentifier
-        )
+            reuseIdentifier: reuseIdentifier)
 
         setupUI()
     }
@@ -136,7 +136,8 @@ final class HomeSectionTableViewCell: UITableViewCell {
     func configure(
         with section: HomeSection,
         viewModel: HomeViewModel,
-        onArrowTapped: @escaping () -> Void
+        onArrowTapped: @escaping () -> Void,
+        onItemSelected: @escaping (HomeItem) -> Void
     ) {
         self.viewModel = viewModel
 
@@ -146,6 +147,7 @@ final class HomeSectionTableViewCell: UITableViewCell {
         layoutType = section.catalogListItems?.first?.catalogObject?.layoutType
         
         self.onArrowTapped = onArrowTapped //store
+        self.onItemSelected = onItemSelected
         
         collectionView.reloadData()
     }
@@ -178,7 +180,13 @@ extension HomeSectionTableViewCell: UICollectionViewDataSource {
         cell.configure(
             with: item,
             layoutType: layoutType,
-            viewModel: viewModel
+            fetchImage: { [weak viewModel] url in
+                guard let viewModel else {
+                    throw APIError.invalidResponse
+                }
+                
+                return try await viewModel.fetchImage(from: url)
+            }
         )
 
         return cell
@@ -219,4 +227,16 @@ extension HomeSectionTableViewCell: UICollectionViewDelegateFlowLayout {
         )
     }
     
+}
+extension HomeSectionTableViewCell: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = items[indexPath.item]
+        
+        print("Selected item:", item.displayTitle ?? "")
+             print("Catalog ID:", item.catalogID)
+             print("Content ID:", item.contentID)
+        
+        onItemSelected?(item)
+
+    }
 }

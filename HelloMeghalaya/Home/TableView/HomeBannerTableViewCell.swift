@@ -19,6 +19,8 @@ final class HomeBannerTableViewCell: UITableViewCell {
     
     private  var viewModel: HomeViewModel!
     
+    var onBannerSelected: ((HomeItem) -> Void)?
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         
         let layout = UICollectionViewFlowLayout()
@@ -166,6 +168,18 @@ extension HomeBannerTableViewCell: UICollectionViewDataSource {
     }
 
     
+}
+
+extension HomeBannerTableViewCell: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = items[indexPath.item]
+        
+        print("Banner selected:", item.displayTitle ?? "")
+                print("Catalog ID:", item.catalogID)
+                print("Content ID:", item.contentID)
+
+                onBannerSelected?(item)
+    }
 }
 
 extension HomeBannerTableViewCell: UICollectionViewDelegateFlowLayout {

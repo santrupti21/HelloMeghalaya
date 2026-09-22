@@ -168,38 +168,55 @@ extension ViewController: UITableViewDataSource {
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath
     ) -> UITableViewCell {
-
+        
         if indexPath.row == 0 {
-
+            
             guard let cell = tableView.dequeueReusableCell(
                 withIdentifier: "HomeBannerTableViewCell",
                 for: indexPath
             ) as? HomeBannerTableViewCell else {
                 return UITableViewCell()
             }
-
+            
             cell.configure(
                 with: homeSliderItems,
                 viewModel: viewModel
             )
+            
+            cell.onBannerSelected = { [weak self] item in
+                guard let self else {
+                    return
+                }
+                print("Selected Banner:", item.displayTitle ?? "")
+                        print("Catalog ID:", item.catalogID)
+                        print("Content ID:", item.contentID)
+                
+                let movieDetailsViewModel = MovieDetailsViewModel(catalogId: item.catalogID, contentId: item.contentID)
 
+                let movieDetailsViewController = MovieDetailsViewController(viewModel: movieDetailsViewModel)
+
+                       self.navigationController?.pushViewController(
+                        movieDetailsViewController,
+                           animated: true)
+            }
+            
             return cell
         }
-
+        
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: "HomeSectionTableViewCell",
             for: indexPath
         ) as? HomeSectionTableViewCell else {
             return UITableViewCell()
         }
-
+        
         cell.backgroundColor = .clear
-
+        
         let section = homeSections[indexPath.row - 1]
-
+        
         //Aroow button
-        cell.configure(with: section, viewModel: viewModel) { [weak self] in
-
+        cell.configure(with: section, viewModel: viewModel, onArrowTapped:  { [weak self] in
+            
             guard let self else {
                 return
             }
@@ -210,16 +227,40 @@ extension ViewController: UITableViewDataSource {
                 friendlyID: section.friendlyID,
                 viewModel: self.viewModel
             )
-
+            
             self.navigationController?.pushViewController(
                 categoryViewController,
                 animated: true
             )
+        }, onItemSelected: { [weak self] item in
+            
+            guard let self else {
+                return
+            }
+
+            print("Selected from ViewController:", item.displayTitle ?? "")
+            print("Catalog ID:", item.catalogID)
+            print("Content ID:", item.contentID)
+
+            let movieDetailsViewModel = MovieDetailsViewModel(
+                catalogId: item.catalogID,
+                contentId: item.contentID
+            )
+
+            let movieDetailsViewController = MovieDetailsViewController(
+                viewModel: movieDetailsViewModel
+            )
+
+            self.navigationController?.pushViewController(
+                movieDetailsViewController,
+                animated: true
+            )
         }
+                       
+        )
         return cell
     }
 }
-
 
 extension ViewController: UITableViewDelegate {
     //Table view row height

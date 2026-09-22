@@ -91,8 +91,7 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
     func configure(
         with item: HomeItem,
         layoutType: String?,
-        viewModel: HomeViewModel
-    ) {
+        fetchImage: @escaping (URL) async throws -> UIImage    ) {
         imageTask?.cancel()
         
         if layoutType == "t_2_3_movie" {
@@ -128,7 +127,7 @@ final class HomeContentCollectionViewCell: UICollectionViewCell {
 
         imageTask = Task { [weak self] in
             do {
-                let image = try await viewModel.fetchImage(from: url)
+                let image = try await fetchImage(url)
 
                 guard !Task.isCancelled else {
                     return

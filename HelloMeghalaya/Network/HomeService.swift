@@ -135,6 +135,141 @@ final class HomeService {
         return responseModel.data.items
     }
     
+    func fetchMovieDetails(catalogId: String, contentId: String) async throws -> MovieDetails {
+        
+        guard var components = URLComponents(string: APIConfiguration.baseURL + APIEndpoint.mediaitem(catalogID: catalogId, contentID: contentId).path
+        ) else {
+            throw APIError.invalidURL
+        }
+        components.queryItems = [ URLQueryItem(name: "auth_token", value: APIConfiguration.authToken),
+        
+        URLQueryItem(name: "region", value: APIConfiguration.region),
+                                
+        URLQueryItem(name: "item_language", value: APIConfiguration.itemLanguage)
+        ]
+        
+        guard let url = components.url else {
+            throw APIError.invalidURL
+        }
+        print("Calling MovieDetails API:", url)
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        print("Movie Details API Status Code:", httpResponse.statusCode)
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.httpError(statusCode: httpResponse.statusCode)
+        }
+        
+        let responseModel = try JSONDecoder().decode(MovieDetailsResponse.self, from: data)
+        print("Movie details API Decoiding Sucessful")
+        
+        return responseModel.data
+        
+    }
+    
+    func fetchUserDetails(catalogId: String, contentId: String) async throws -> ConsolidatedItemState {
+       
+        guard let url = URL(string: APIConfiguration.baseURL + APIEndpoint.consolidatedItemStateV3.path) else {
+            throw APIError.invalidURL
+        }
+        
+        print("Calling Get all Details API:", url)
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body: [String: Any] = [
+            "auth_token": APIConfiguration.authToken,
+            "id": "bbd9abf85937e95ddae993e503289c6c",
+            "catalog_id": catalogId,
+            "content_definition": "movie",
+            "content_id": contentId,
+            "md5": "92f5a0ed73891f943aa680bf5eba0308",
+            "region": APIConfiguration.region,
+            "ts": "1788883603.926777",
+            "platform": "ios",
+            "category": "action"
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        
+        let (data, response) = try await URLSession.shared.data(
+            for: request
+        )
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+
+        print("Get All Details API Status Code:", httpResponse.statusCode)
+
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.httpError(
+                statusCode: httpResponse.statusCode)
+        }
+
+            let responseModel = try JSONDecoder().decode(
+                ConsolidatedItemStateResponse.self,
+                from: data
+            )
+
+            print("Get All Details API Decoding Successful")
+
+            return responseModel.data
+    }
+    
+    func fetchRecommended(catalogID: String, genres: [String], page: Int) async throws -> [HomeItem] {
+        
+        guard var components = URLComponents(string: APIConfiguration.baseURL + APIEndpoint.recomended(catalogId: catalogID).path) else {
+            
+            throw APIError.invalidURL
+        }
+        components.queryItems = [
+            URLQueryItem(
+                name: "auth_token",
+                value: APIConfiguration.authToken
+            ),
+            URLQueryItem(
+                name: "region",
+                value: APIConfiguration.region
+            ),
+            URLQueryItem(
+                name: "item_language",
+                value: APIConfiguration.itemLanguage
+            ),
+            URLQueryItem(
+                name: "genres",
+                value: genres.joined(separator: ",")
+            ),
+            URLQueryItem(
+                name: "page",
+                value: "\(page)"
+            ),
+            URLQueryItem(
+                name: "page_size",
+                value: "10"
+            )
+        ]
+        
+        guard let url = components.url else {
+            throw APIError.invalidURL
+        }
+        print("Calling Recomended API:", url)
+        
+        let response: RecommendedResponse = try await APIClient.shared.request(url)
+        
+        print("Recomended Items:", response.data.items.count)
+
+        return response.data.items
+        
+    }
 }
 private extension HomeService {
 
@@ -246,4 +381,6 @@ private extension HomeService {
 
         return components.url
     }
+    
+  
 }

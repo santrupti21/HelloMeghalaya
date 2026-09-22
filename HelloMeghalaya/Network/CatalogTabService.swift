@@ -80,6 +80,9 @@ enum APIEndpoint {
     case catalogTabs
     case catalog(homeLink: String)
     case search(query: String, page: Int, pageSize: Int)
+    case mediaitem(catalogID: String, contentID: String) //details
+    case consolidatedItemStateV3
+    case recomended(catalogId: String)
 
     var path: String {
 
@@ -93,6 +96,15 @@ enum APIEndpoint {
             
         case .search:
             return "/search.gzip"
+            
+        case .mediaitem(let catalogId, let contentId):
+            return "/catalogs/\(catalogId)/items/\(contentId).gzip"
+            
+        case .consolidatedItemStateV3:
+            return "/v2/users/get_all_details"
+            
+        case .recomended(let catalogID):
+            return "/catalogs/\(catalogID)/items.gzip"
         }
     }
 }
