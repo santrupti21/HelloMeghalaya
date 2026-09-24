@@ -25,6 +25,10 @@ struct MovieDetails: Decodable {
     let contentType: String?
     let playURL: PlayURL?
     
+    let episodeCount: Int?
+    let subcategoryFlag: String?
+    let subcategories: [Subcategory]?
+    
     enum CodingKeys: String, CodingKey {
         case title
         case description
@@ -38,8 +42,32 @@ struct MovieDetails: Decodable {
         
         case contentType = "content_type"
         case playURL = "play_url"
+        
+        case episodeCount = "episode_count"
+        case subcategoryFlag = "subcategory_flag"
+        case subcategories
     }
     
+}
+
+struct Subcategory: Decodable {
+    let title: String?
+    let contentID: String?
+    let catalogID: String?
+    let language: String?
+    let episodeFlag: String?
+    let episodeCount: Int?
+    let sequenceNo: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case title
+        case contentID = "content_id"
+        case catalogID = "catalog_id"
+        case language
+        case episodeFlag = "episode_flag"
+        case episodeCount = "episode_count"
+        case sequenceNo = "sequence_no"
+    }
 }
 
 struct MovieThumbnails: Decodable {

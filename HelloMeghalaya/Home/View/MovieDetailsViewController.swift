@@ -38,6 +38,11 @@ enum PlaybackSpeed {
             }
         }
 }
+enum DetailsType {
+    case movie
+    case show
+    case episode
+}
 
 final class MovieDetailsViewController: UIViewController {
     
@@ -70,6 +75,12 @@ final class MovieDetailsViewController: UIViewController {
     private let watchNowButton = UIButton(type: .system)
     private let actionStackView = UIStackView()
     private let descriptionLabel = UILabel()
+    
+    private let languageStackView = UIStackView()// garao khasi
+    
+    private var languageStackTopConstraint: NSLayoutConstraint!
+    private var languageStackHeightConstraint: NSLayoutConstraint!
+    
     private let descriptionToggleButton = UIButton(type: .system)
     
     private let scrollView = UIScrollView()
@@ -83,6 +94,19 @@ final class MovieDetailsViewController: UIViewController {
     private let recommendedTitlelabel = UILabel()
     private let recommendedCollectionView: UICollectionView
     
+    private let episodeCollectionView: UICollectionView
+    
+    private var detailsType: DetailsType
+    
+    private var descriptionTopConstraint: NSLayoutConstraint!
+    private var movieDescriptionTopConstraint: NSLayoutConstraint!
+    private var showDescriptionTopConstraint: NSLayoutConstraint!
+    private var recommendedBottomConstraint: NSLayoutConstraint!
+    private var episodeBottomConstraint: NSLayoutConstraint!
+    private var episodeTopConstraint: NSLayoutConstraint!
+    private var descriptionBottomConstraint: NSLayoutConstraint!
+    private var episodeLanguageTopConstraint: NSLayoutConstraint!
+    
     private var selectedQuality: VideoQuality = .auto
     private var selectedPlaybackSpeed: PlaybackSpeed = .normal
     
@@ -92,14 +116,26 @@ final class MovieDetailsViewController: UIViewController {
     
     init(viewModel: MovieDetailsViewModel) {
         self.viewModel = viewModel
-        
+        self.detailsType = .movie
+
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 10
-       
-        self.recommendedCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        
+
+        self.recommendedCollectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: layout
+        )
+        let episodesLayout = UICollectionViewFlowLayout()
+          episodesLayout.scrollDirection = .vertical
+          episodesLayout.minimumLineSpacing = 10
+
+          self.episodeCollectionView = UICollectionView(
+              frame: .zero,
+              collectionViewLayout: episodesLayout
+          )
         super.init(nibName: nil, bundle: nil)
+
         self.viewModel.delegate = self
     }
     
@@ -117,6 +153,7 @@ final class MovieDetailsViewController: UIViewController {
         view.backgroundColor = .black
         setupUI()
         
+        
         updateOrientationUI(isLandscape: UIDevice.current.orientation.isLandscape)
         
         Task {
@@ -124,14 +161,201 @@ final class MovieDetailsViewController: UIViewController {
                 // 1. Movie Details API
                 try await viewModel.fetchMovieDetails()
                 print("Movie details loaded")
+                self.detailsType = viewModel.detailsType
+                
+                
 
                 // 2. Display Movie Details
-                if let details = viewModel.movieDetails {
+                if viewModel.detailsType == .episode,
+                   let episode = viewModel.episode {
+
+                    // MARK: - Episode Details
+
+                    headerTitlelabel.text = episode.title
+                    landscapeTitleLabel.text = episode.title
+                    titleLabel.text = episode.title
+                    genreLabel.text = episode.itemCaption
+                    descriptionLabel.text = episode.description
+
+                    playerView.isHidden = true
+                    posterImageView.isHidden = false
+
+                    if let imageURLString = episode.thumbnails?.xlImage16x9?.url,
+                       let imageURL = URL(string: imageURLString) {
+
+                        Task {
+                            if let image = try? await viewModel.fetchImage(from: imageURL) {
+                                await MainActor.run {
+                                    self.posterImageView.image = image
+                                }
+                            }
+                        }
+                    }
+
+                    // MARK: - Episode Layout
+
+                    // Show language buttons
+                    languageStackView.isHidden = false
+                    languageStackHeightConstraint.constant = 40
+
+                    // For Episode:
+                    // Description
+                    // ↓
+                    // Garo / Khasi
+                    // ↓
+                    // Episodes
+
+                    languageStackTopConstraint.isActive = false
+                    episodeLanguageTopConstraint.isActive = true
+
+                    // Create Garo / Khasi dynamically
+                    setupLanguages()
+
+                    // Hide Recommended
+                    recommendedTitlelabel.isHidden = true
+                    recommendedCollectionView.isHidden = true
+
+                    // Show Episodes
+                    episodeCollectionView.isHidden = false
+
+                    // Show all Episode actions
+                    actionStackView.arrangedSubviews[0].isHidden = false
+                    actionStackView.arrangedSubviews[1].isHidden = false
+
+                    // Description comes below action buttons
+                    showDescriptionTopConstraint.isActive = false
+                    movieDescriptionTopConstraint.isActive = true
+                    descriptionTopConstraint.isActive = false
+
+                    // Episode collection starts below language buttons
+                    episodeTopConstraint.isActive = true
+
+                    // Episode collection ends at contentView bottom
+                    episodeBottomConstraint.isActive = true
+
+                    // Recommended is not used
+                    recommendedBottomConstraint.isActive = false
+
+                    // Description itself does not end the content
+                    descriptionBottomConstraint.isActive = false
+
+                    view.layoutIfNeeded()
+
+                    // Decide whether the description needs the
+                    // expand/collapse arrow
+                    updateDescriptionToggle()
+                }
+                
+             else if let details = viewModel.movieDetails {
                     headerTitlelabel.text = details.title
                     landscapeTitleLabel.text = details.title
                     titleLabel.text = details.title
                     genreLabel.text = details.itemCaption
                     descriptionLabel.text = details.description
+                    
+                    switch detailsType {
+                    case .show:
+
+                        languageStackView.isHidden = false
+                        languageStackTopConstraint.constant = 20
+                        languageStackHeightConstraint.constant = 40
+
+                        setupLanguages()
+
+                        recommendedTitlelabel.isHidden = true
+                        recommendedCollectionView.isHidden = true
+
+                        episodeCollectionView.isHidden = false
+
+                        actionStackView.arrangedSubviews[0].isHidden = true
+                        actionStackView.arrangedSubviews[1].isHidden = true
+
+                        showDescriptionTopConstraint.isActive = true
+                        movieDescriptionTopConstraint.isActive = false
+                        descriptionTopConstraint.isActive = false
+
+                        languageStackTopConstraint.isActive = true
+                        episodeLanguageTopConstraint.isActive = false
+
+                        recommendedBottomConstraint.isActive = false
+
+                        episodeTopConstraint.isActive = true
+                        episodeBottomConstraint.isActive = true
+
+                        descriptionBottomConstraint.isActive = false
+
+                    case .movie:
+
+                        languageStackView.isHidden = true
+                        languageStackTopConstraint.constant = 0
+                        languageStackHeightConstraint.constant = 0
+
+                        recommendedTitlelabel.isHidden = false
+                        recommendedCollectionView.isHidden = false
+
+                        episodeCollectionView.isHidden = true
+
+                        actionStackView.arrangedSubviews[0].isHidden = false
+                        actionStackView.arrangedSubviews[1].isHidden = false
+
+                        showDescriptionTopConstraint.isActive = false
+                        movieDescriptionTopConstraint.isActive = true
+                        descriptionTopConstraint.isActive = false
+
+                        recommendedBottomConstraint.isActive = true
+                        episodeBottomConstraint.isActive = false
+                        episodeTopConstraint.isActive = false
+                        descriptionBottomConstraint.isActive = false
+
+                        episodeLanguageTopConstraint.isActive = false
+                    
+                    case .episode:
+
+                        if let episode = viewModel.episode {
+
+                            titleLabel.text = episode.title
+                            descriptionLabel.text = episode.description
+
+                            if let imageURLString = episode.thumbnails?.xlImage16x9?.url,
+                               let imageURL = URL(string: imageURLString) {
+
+                                Task {
+                                    if let image = try? await viewModel.fetchImage(from: imageURL) {
+                                        posterImageView.image = image
+                                    }
+                                }
+                            }
+                        }
+
+                        languageStackView.isHidden = false
+                        languageStackTopConstraint.constant = 20
+                        languageStackHeightConstraint.constant = 40
+
+                        // Episode language buttons come after description
+                        languageStackTopConstraint.isActive = false
+                        episodeLanguageTopConstraint.isActive = true
+
+                        setupLanguages()
+
+                        recommendedTitlelabel.isHidden = true
+                        recommendedCollectionView.isHidden = true
+
+                        episodeCollectionView.isHidden = false
+
+                        actionStackView.arrangedSubviews[0].isHidden = false
+                        actionStackView.arrangedSubviews[1].isHidden = false
+
+                        showDescriptionTopConstraint.isActive = false
+                        movieDescriptionTopConstraint.isActive = true
+                        descriptionTopConstraint.isActive = false
+
+                        recommendedBottomConstraint.isActive = false
+
+                        episodeTopConstraint.isActive = true
+                        episodeBottomConstraint.isActive = true
+
+                        descriptionBottomConstraint.isActive = false
+                    }
 
                     view.layoutIfNeeded()
                     updateDescriptionToggle()
@@ -150,7 +374,9 @@ final class MovieDetailsViewController: UIViewController {
 
                 // 3. Get All Details API
                 do {
-                    try await viewModel.fetchUserDetails()
+                    if viewModel.detailsType != .episode {
+                        try await viewModel.fetchUserDetails()
+                    }
 
                     print("Get All Details Loaded")
 
@@ -319,6 +545,7 @@ final class MovieDetailsViewController: UIViewController {
         
     }
     
+    
     private func setupUI() {
         
         headerTitlelabel.textColor = .white
@@ -367,12 +594,16 @@ final class MovieDetailsViewController: UIViewController {
         contentView.addSubview(genreLabel)
         contentView.addSubview(watchNowButton)
         contentView.addSubview(actionStackView)
+        
+        contentView.addSubview(languageStackView)
+        
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(descriptionToggleButton)
         
         contentView.addSubview(recommendedTitlelabel)
         contentView.addSubview(recommendedCollectionView)
 
+        contentView.addSubview(episodeCollectionView)
 
         backButton.translatesAutoresizingMaskIntoConstraints = false
         
@@ -399,115 +630,159 @@ final class MovieDetailsViewController: UIViewController {
         genreLabel.translatesAutoresizingMaskIntoConstraints = false
         watchNowButton.translatesAutoresizingMaskIntoConstraints = false
         actionStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        languageStackView.translatesAutoresizingMaskIntoConstraints = false
+        
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionToggleButton.translatesAutoresizingMaskIntoConstraints = false
         
         recommendedTitlelabel.translatesAutoresizingMaskIntoConstraints = false
         recommendedCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        
+        episodeCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        
+        languageStackTopConstraint = languageStackView.topAnchor.constraint(
+            equalTo: actionStackView.bottomAnchor,
+            constant: 20
+        )
 
+        languageStackHeightConstraint = languageStackView.heightAnchor.constraint(
+            equalToConstant: 40
+        )
+        
+        descriptionTopConstraint = descriptionLabel.topAnchor.constraint(
+            equalTo: languageStackView.bottomAnchor,
+            constant: 12
+        )
+        
+        movieDescriptionTopConstraint = descriptionLabel.topAnchor.constraint(
+            equalTo: actionStackView.bottomAnchor,
+            constant: 25
+        )
+
+        showDescriptionTopConstraint = descriptionLabel.topAnchor.constraint(
+            equalTo: languageStackView.bottomAnchor,
+            constant: 12
+        )
+        
+        recommendedBottomConstraint = recommendedCollectionView.bottomAnchor.constraint(
+            equalTo: contentView.bottomAnchor,
+            constant: -20
+        )
+
+        episodeBottomConstraint = episodeCollectionView.bottomAnchor.constraint(
+            equalTo: contentView.bottomAnchor,
+            constant: -20
+        )
+        episodeTopConstraint = episodeCollectionView.topAnchor.constraint(
+            equalTo: languageStackView.bottomAnchor,
+            constant: 12
+        )
+        descriptionBottomConstraint = descriptionToggleButton.bottomAnchor.constraint(
+            equalTo: contentView.bottomAnchor,
+            constant: -20
+        )
+        
+        episodeLanguageTopConstraint = languageStackView.topAnchor.constraint(
+            equalTo: descriptionToggleButton.bottomAnchor,
+            constant: 12
+        )
         NSLayoutConstraint.activate([
 
+            // Back Button
             backButton.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor,
-                  constant: 20
+                constant: 20
             ),
-
             backButton.topAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.topAnchor,
                 constant: 8
             ),
-
             backButton.widthAnchor.constraint(equalToConstant: 40),
-
             backButton.heightAnchor.constraint(equalToConstant: 40),
-            
+
             // Landscape Back Button
             landscapeBackButton.leadingAnchor.constraint(
                 equalTo: playerView.leadingAnchor,
                 constant: 20
             ),
-
             landscapeBackButton.topAnchor.constraint(
                 equalTo: playerView.topAnchor,
                 constant: 20
             ),
-
             landscapeBackButton.widthAnchor.constraint(equalToConstant: 40),
-
             landscapeBackButton.heightAnchor.constraint(equalToConstant: 40),
 
             // Landscape Title
             landscapeTitleLabel.centerYAnchor.constraint(
                 equalTo: landscapeBackButton.centerYAnchor
             ),
-
             landscapeTitleLabel.leadingAnchor.constraint(
                 equalTo: landscapeBackButton.trailingAnchor,
                 constant: 10
             ),
-
             landscapeTitleLabel.trailingAnchor.constraint(
                 equalTo: playerView.trailingAnchor,
                 constant: -20
             ),
 
-            // Header title
+            // Header Title
             headerTitlelabel.centerYAnchor.constraint(
                 equalTo: backButton.centerYAnchor
             ),
-
             headerTitlelabel.leadingAnchor.constraint(
                 equalTo: backButton.trailingAnchor,
                 constant: 10
             ),
-
             headerTitlelabel.trailingAnchor.constraint(
                 equalTo: view.trailingAnchor,
                 constant: -20
             ),
+
+            // Quality Button
             qualityButton.topAnchor.constraint(
                 equalTo: playerView.topAnchor,
                 constant: 12
             ),
-
             qualityButton.trailingAnchor.constraint(
                 equalTo: playerView.trailingAnchor,
                 constant: -10
             ),
+            qualityButton.widthAnchor.constraint(equalToConstant: 40),
+            qualityButton.heightAnchor.constraint(equalToConstant: 40),
 
-            qualityButton.widthAnchor.constraint(
-                equalToConstant: 40
+            // Playback Speed Button
+            playbackSpeedButton.topAnchor.constraint(
+                equalTo: playerView.topAnchor,
+                constant: 12
             ),
-
-            qualityButton.heightAnchor.constraint(
-                equalToConstant: 40
+            playbackSpeedButton.trailingAnchor.constraint(
+                equalTo: qualityButton.leadingAnchor,
+                constant: -10
             ),
-            
-            playbackSpeedButton.topAnchor.constraint(equalTo: playerView.topAnchor, constant: 12),
-            playbackSpeedButton.trailingAnchor.constraint(equalTo: qualityButton.leadingAnchor, constant: -10),
             playbackSpeedButton.widthAnchor.constraint(equalToConstant: 40),
             playbackSpeedButton.heightAnchor.constraint(equalToConstant: 40),
+
             // Poster
             posterImageView.topAnchor.constraint(
                 equalTo: headerTitlelabel.bottomAnchor,
                 constant: 15
             ),
-
             posterImageView.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor
             ),
-
             posterImageView.trailingAnchor.constraint(
                 equalTo: view.trailingAnchor
             ),
-
             posterImageView.heightAnchor.constraint(
                 equalTo: posterImageView.widthAnchor,
                 multiplier: 9.0 / 16.0
             ),
-            //player
+
+            // Player
             playerView.topAnchor.constraint(
-                equalTo: headerTitlelabel.bottomAnchor, constant: 15
+                equalTo: headerTitlelabel.bottomAnchor,
+                constant: 15
             ),
             playerView.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor
@@ -519,261 +794,265 @@ final class MovieDetailsViewController: UIViewController {
                 equalTo: playerView.widthAnchor,
                 multiplier: 9.0 / 16.0
             ),
-            
+
+            // Play/Pause
             playPauseButton.centerXAnchor.constraint(
                 equalTo: playerView.centerXAnchor
             ),
-
             playPauseButton.centerYAnchor.constraint(
                 equalTo: playerView.centerYAnchor
             ),
+            playPauseButton.widthAnchor.constraint(equalToConstant: 60),
+            playPauseButton.heightAnchor.constraint(equalToConstant: 60),
 
-            playPauseButton.widthAnchor.constraint(
-                equalToConstant: 60
-            ),
-
-            playPauseButton.heightAnchor.constraint(
-                equalToConstant: 60
-            ),
-            
+            // Backward
             backwardButton.centerXAnchor.constraint(
                 equalTo: playerView.centerXAnchor,
                 constant: -70
             ),
-
             backwardButton.centerYAnchor.constraint(
                 equalTo: playerView.centerYAnchor
             ),
+            backwardButton.widthAnchor.constraint(equalToConstant: 50),
+            backwardButton.heightAnchor.constraint(equalToConstant: 50),
 
-            backwardButton.widthAnchor.constraint(
-                equalToConstant: 50
-            ),
-
-            backwardButton.heightAnchor.constraint(
-                equalToConstant: 50
-            ),
-            
+            // Forward
             forwardButton.centerXAnchor.constraint(
                 equalTo: playerView.centerXAnchor,
                 constant: 70
             ),
-
             forwardButton.centerYAnchor.constraint(
                 equalTo: playerView.centerYAnchor
             ),
+            forwardButton.widthAnchor.constraint(equalToConstant: 50),
+            forwardButton.heightAnchor.constraint(equalToConstant: 50),
 
-            forwardButton.widthAnchor.constraint(
-                equalToConstant: 50
-            ),
-
-            forwardButton.heightAnchor.constraint(
-                equalToConstant: 50
-            ),
+            // Progress Slider
             progressSlider.bottomAnchor.constraint(
                 equalTo: playerView.bottomAnchor,
                 constant: -10
             ),
+            progressSlider.heightAnchor.constraint(equalToConstant: 20),
 
-            progressSlider.heightAnchor.constraint(
-                equalToConstant: 20
-            ),
+            // Current Time
             currentTimeLabel.leadingAnchor.constraint(
                 equalTo: playerView.leadingAnchor,
                 constant: 10
             ),
-
             currentTimeLabel.bottomAnchor.constraint(
                 equalTo: playerView.bottomAnchor,
                 constant: -10
             ),
 
+            // Duration
             durationlabel.trailingAnchor.constraint(
                 equalTo: fullscreenButton.leadingAnchor,
                 constant: -8
             ),
-
             durationlabel.bottomAnchor.constraint(
                 equalTo: playerView.bottomAnchor,
                 constant: -10
             ),
 
+            // Progress Slider Horizontal
             progressSlider.leadingAnchor.constraint(
                 equalTo: currentTimeLabel.trailingAnchor,
                 constant: 8
             ),
-
             progressSlider.trailingAnchor.constraint(
                 equalTo: durationlabel.leadingAnchor,
                 constant: -8
             ),
-
             progressSlider.centerYAnchor.constraint(
                 equalTo: currentTimeLabel.centerYAnchor
             ),
-            
+
+            // Fullscreen
             fullscreenButton.leadingAnchor.constraint(
                 equalTo: durationlabel.trailingAnchor,
                 constant: 8
             ),
-
             fullscreenButton.centerYAnchor.constraint(
                 equalTo: durationlabel.centerYAnchor
             ),
-
-            fullscreenButton.widthAnchor.constraint(
-                equalToConstant: 30
-            ),
-
-            fullscreenButton.heightAnchor.constraint(
-                equalToConstant: 30
-            ),
+            fullscreenButton.widthAnchor.constraint(equalToConstant: 30),
+            fullscreenButton.heightAnchor.constraint(equalToConstant: 30),
             fullscreenButton.trailingAnchor.constraint(
                 equalTo: playerView.trailingAnchor,
                 constant: -10
             ),
-            
+
+            // Buffering Indicator
             bufferingIndicator.centerXAnchor.constraint(
                 equalTo: playerView.centerXAnchor
             ),
             bufferingIndicator.centerYAnchor.constraint(
                 equalTo: playerView.centerYAnchor
             ),
-          
-            // Scroll view
+
+            // Scroll View
             scrollView.topAnchor.constraint(
                 equalTo: playerView.bottomAnchor,
-                constant: 15
+                constant: 8
             ),
-
             scrollView.leadingAnchor.constraint(
                 equalTo: view.leadingAnchor
             ),
-
             scrollView.trailingAnchor.constraint(
                 equalTo: view.trailingAnchor
             ),
-
             scrollView.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor
             ),
 
-            // Content view inside scroll view
+            // Content View
             contentView.topAnchor.constraint(
                 equalTo: scrollView.contentLayoutGuide.topAnchor
             ),
-
             contentView.leadingAnchor.constraint(
                 equalTo: scrollView.contentLayoutGuide.leadingAnchor
             ),
-
             contentView.trailingAnchor.constraint(
                 equalTo: scrollView.contentLayoutGuide.trailingAnchor
             ),
-
             contentView.bottomAnchor.constraint(
                 equalTo: scrollView.contentLayoutGuide.bottomAnchor
             ),
-
             contentView.widthAnchor.constraint(
                 equalTo: scrollView.frameLayoutGuide.widthAnchor
             ),
 
-
-            // Movie title
+            // Movie Title
             titleLabel.topAnchor.constraint(
                 equalTo: contentView.topAnchor,
                 constant: 20
             ),
-
             titleLabel.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor,
                 constant: 20
             ),
-
             titleLabel.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor,
                 constant: -20
             ),
-            
-            //Genre
-            genreLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
-            
-            genreLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            
-            genreLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            //watch Now
-            watchNowButton.topAnchor.constraint(equalTo: genreLabel.bottomAnchor, constant: 20),
-            
-            watchNowButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            
-            watchNowButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            watchNowButton.heightAnchor.constraint(equalToConstant: 50),
-            
-            //action Stackview
-            actionStackView.topAnchor.constraint(equalTo: watchNowButton.bottomAnchor, constant: 20),
-            
-            actionStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            
-            actionStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
 
-
-            // Description
-            descriptionLabel.topAnchor.constraint(
-                equalTo: actionStackView.bottomAnchor,
-                constant: 12
+            // Genre
+            genreLabel.topAnchor.constraint(
+                equalTo: titleLabel.bottomAnchor,
+                constant: 8
+            ),
+            genreLabel.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
+                constant: 20
+            ),
+            genreLabel.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -20
             ),
 
+            // Watch Now
+            watchNowButton.topAnchor.constraint(
+                equalTo: genreLabel.bottomAnchor,
+                constant: 18
+            ),
+            watchNowButton.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
+                constant: 20
+            ),
+            watchNowButton.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -20
+            ),
+            watchNowButton.heightAnchor.constraint(equalToConstant: 50),
+
+            // Action Stack View
+            actionStackView.topAnchor.constraint(
+                equalTo: watchNowButton.bottomAnchor,
+                constant: 28
+            ),
+            actionStackView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
+                constant: 10
+            ),
+            actionStackView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -10
+            ),
+
+            // Language Stack View
+            languageStackTopConstraint,
+            languageStackView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
+                constant: 20
+            ),
+            languageStackView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
+                constant: -20
+            ),
+            languageStackHeightConstraint,
+
+            // Description
+            descriptionTopConstraint,
             descriptionLabel.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor,
                 constant: 20
             ),
-
             descriptionLabel.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor,
                 constant: -20
             ),
 
-            descriptionToggleButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 8),
-            
-            descriptionToggleButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            
+            // Description Toggle
+            descriptionToggleButton.topAnchor.constraint(
+                equalTo: descriptionLabel.bottomAnchor,
+                constant: 8
+            ),
+            descriptionToggleButton.centerXAnchor.constraint(
+                equalTo: contentView.centerXAnchor
+            ),
+            // Recommended Title
             recommendedTitlelabel.topAnchor.constraint(
                 equalTo: descriptionToggleButton.bottomAnchor,
-                constant: 20
+                constant: 12
             ),
-
             recommendedTitlelabel.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor,
                 constant: 20
             ),
-
             recommendedTitlelabel.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor,
                 constant: -20
             ),
 
+            // Recommended Collection
             recommendedCollectionView.topAnchor.constraint(
                 equalTo: recommendedTitlelabel.bottomAnchor,
-                constant: 10
+                constant: 8
             ),
-
             recommendedCollectionView.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor,
                 constant: 20
             ),
-
             recommendedCollectionView.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor
             ),
-
             recommendedCollectionView.heightAnchor.constraint(
                 equalToConstant: 190
             ),
+            // Episode Collection
+            episodeTopConstraint,
+            episodeCollectionView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
+                constant: 20
+            ),
 
-            recommendedCollectionView.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor,
+            episodeCollectionView.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor,
                 constant: -20
+            ),
+
+            episodeCollectionView.heightAnchor.constraint(
+                equalToConstant: 380
             )
         ])
 
@@ -785,6 +1064,12 @@ final class MovieDetailsViewController: UIViewController {
         genreLabel.font = .systemFont(ofSize: 16)
         genreLabel.textColor = .lightGray
         genreLabel.numberOfLines = 1
+        
+        
+        languageStackView.axis = .horizontal
+        languageStackView.spacing = 10
+        languageStackView.alignment = .center
+        languageStackView.distribution = .fillEqually
         
         watchNowButton.setTitle("WATCH NOW", for: .normal)
         watchNowButton.setTitleColor(.black, for: .normal)
@@ -906,7 +1191,97 @@ final class MovieDetailsViewController: UIViewController {
         recommendedTitlelabel.textColor = .white
         recommendedTitlelabel.font = .systemFont(ofSize: 20, weight: .semibold)
         
+        episodeCollectionView.backgroundColor = .clear
+        episodeCollectionView.showsVerticalScrollIndicator = false
+        episodeCollectionView.register(EpisodeCollectionViewCell.self, forCellWithReuseIdentifier: "EpisodeCell")
+        
+        episodeCollectionView.dataSource = self
+        episodeCollectionView.delegate = self
+        
         updateOrientationUI(isLandscape: false)
+    }
+    
+    private func setupLanguages() {
+
+        // Remove existing language buttons
+        languageStackView.arrangedSubviews.forEach {
+            languageStackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+
+        // Use parent show details for an episode
+        let details = viewModel.detailsType == .episode
+            ? viewModel.parentShowDetails
+            : viewModel.movieDetails
+        
+        print("===== EPISODE LANGUAGE DEBUG =====")
+        print("Details Type:", viewModel.detailsType)
+        print("Parent Show Details:", viewModel.parentShowDetails != nil)
+        print("Parent Subcategories Count:", viewModel.parentShowDetails?.subcategories?.count ?? 0)
+
+        let subcategories = details?.subcategories?.filter {
+            $0.episodeFlag == "yes" &&
+            ($0.episodeCount ?? 0) > 0
+        } ?? []
+        
+        print("Filtered Language Count:", subcategories.count)
+
+        for subcategory in subcategories {
+            print(
+                "Language:",
+                subcategory.title ?? "",
+                "ContentID:",
+                subcategory.contentID ?? "",
+                "EpisodeFlag:",
+                subcategory.episodeFlag ?? "",
+                "EpisodeCount:",
+                subcategory.episodeCount ?? 0
+            )
+        }
+
+        // Create button for each language
+        for subcategory in subcategories {
+
+            guard let title = subcategory.title else {
+                continue
+            }
+
+            let button = UIButton(type: .system)
+
+            button.setTitle(title, for: .normal)
+            button.setTitleColor(.white, for: .normal)
+            button.backgroundColor = .darkGray
+            button.layer.cornerRadius = 8
+            button.titleLabel?.font = .systemFont(
+                ofSize: 14,
+                weight: .medium
+            )
+
+            button.tag = subcategory.sequenceNo ?? 0
+
+            button.addTarget(
+                self,
+                action: #selector(languageButtonTapped),
+                for: .touchUpInside
+            )
+
+            languageStackView.addArrangedSubview(button)
+        }
+
+        guard let selectedContentID = viewModel.selectedLanguageContentID
+                ?? subcategories.first?.contentID else {
+            return
+        }
+
+        Task {
+            await viewModel.fetchEpisodes(
+                subcategoryID: selectedContentID
+            )
+
+            await MainActor.run {
+                self.episodeCollectionView.reloadData()
+            }
+        }
     }
     
     private func showPoster(for details: MovieDetails) {
@@ -1213,6 +1588,8 @@ final class MovieDetailsViewController: UIViewController {
         
         descriptionToggleButton.setImage(UIImage(systemName: isExpanded ? "chevron.down" : "chevron.up"), for: .normal)
         
+        view.layoutIfNeeded()
+        
     }
     
     @objc private func playPauseButtonTapped() {
@@ -1324,6 +1701,53 @@ final class MovieDetailsViewController: UIViewController {
         }
     }
     
+    @objc private func languageButtonTapped(_ sender: UIButton) {
+
+        let details = viewModel.detailsType == .episode
+            ? viewModel.parentShowDetails
+            : viewModel.movieDetails
+
+        let subcategories = details?.subcategories ?? []
+        print("===== LANGUAGE BUTTON =====")
+        print("Tapped button:", sender.title(for: .normal) ?? "")
+        print("Tapped tag:", sender.tag)
+
+        for subcategory in subcategories {
+            print(
+                "Language:",
+                subcategory.title ?? "",
+                "Sequence:",
+                subcategory.sequenceNo ?? 0,
+                "Content ID:",
+                subcategory.contentID ?? ""
+            )
+        }
+
+
+        guard let selected = subcategories.first(
+            where: { $0.sequenceNo == sender.tag }
+        ) else {
+            return
+        }
+
+        print("Selected Language:", selected.title ?? "")
+        print("Catalog ID:", selected.catalogID ?? "")
+        print("Content ID:", selected.contentID ?? "")
+        print("Language Code:", selected.language ?? "")
+        print("Episode Count:", selected.episodeCount ?? 0)
+
+        Task {
+
+            await viewModel.fetchEpisodes(
+                subcategoryID: selected.contentID ?? ""
+            )
+
+            await MainActor.run {
+                self.episodeCollectionView.reloadData()
+            }
+        }
+    }
+    
     private func updateOrientationUI(isLandscape: Bool) {
         backButton.isHidden = isLandscape
         headerTitlelabel.isHidden = isLandscape
@@ -1367,10 +1791,39 @@ extension MovieDetailsViewController:
 
 extension MovieDetailsViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.recommendedItems.count
+       
+        if collectionView == recommendedCollectionView {
+            return viewModel.recommendedItems.count
+        }
+        
+        if collectionView == episodeCollectionView {
+            return viewModel.episodes.count
+        }
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if collectionView == episodeCollectionView {
+            
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EpisodeCell", for: indexPath) as? EpisodeCollectionViewCell else {
+                return UICollectionViewCell()
+            }
+            
+            let episode = viewModel.episodes[indexPath.item]
+            
+            cell.configure(with: episode,
+            fetchImage: { [weak self] url in
+                guard let self else {
+                    throw APIError.invalidResponse
+                }
+                return try await self.viewModel.fetchImage(from: url)
+            }
+        )
+
+             return cell
+            
+        }
         
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RecommendedCell", for: indexPath) as? HomeContentCollectionViewCell else {
             return UICollectionViewCell()
@@ -1397,6 +1850,10 @@ extension MovieDetailsViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
+        
+        if collectionView == episodeCollectionView {
+            return CGSize(width: collectionView.bounds.width, height: 160)
+        }
 
         let width = collectionView.bounds.width * 0.27
         let imageHeight = width * 3.0 / 2.0
@@ -1413,6 +1870,47 @@ extension MovieDetailsViewController: UICollectionViewDelegateFlowLayout {
         return CGSize(
             width: width,
             height: height
+        )
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        guard collectionView == episodeCollectionView else {
+            return
+        }
+
+        let episode = viewModel.episodes[indexPath.item]
+
+        print("Selected Episode:", episode.title ?? "")
+        print("Catalog ID:", episode.catalogID ?? "")
+        print("Content ID:", episode.contentID ?? "")
+        
+        print("===== PASSING SHOW DETAILS TO EPISODE =====")
+        print("Show Details Exists:", viewModel.movieDetails != nil)
+        print("Show Subcategories:", viewModel.movieDetails?.subcategories?.count ?? 0)
+
+        let parentDetails = viewModel.detailsType == .episode
+            ? viewModel.parentShowDetails
+            : viewModel.movieDetails
+        
+        let episodeViewModel = MovieDetailsViewModel(
+            catalogId: episode.catalogID ?? "",
+            contentId: episode.contentID ?? "",
+            isEpisode: true,
+            episode: episode,
+            parentShowDetails: parentDetails,
+            selectedLanguageContentID: viewModel.selectedLanguageContentID
+        )
+
+        let episodeDetailsViewController = MovieDetailsViewController(
+            viewModel: episodeViewModel
+        )
+
+        navigationController?.pushViewController(
+            episodeDetailsViewController,
+            animated: true
         )
     }
     

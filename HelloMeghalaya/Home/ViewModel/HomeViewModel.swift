@@ -232,21 +232,37 @@ final class HomeViewModel {
                         }
                         return section
                     }
-
-
                 if replaceData {
-
                     // First page
-                    allSections = tableSections
+                    allSections = tableSections.map { section in
+
+                        var seenIDs = Set<String>()
+
+                        let uniqueItems = (section.catalogListItems ?? []).filter { item in
+                            guard seenIDs.insert(item.contentID).inserted else {
+                                return false
+                            }
+
+                            return true
+                        }
+
+                        return HomeSection(
+                            displayTitle: section.displayTitle,
+                            friendlyID: section.friendlyID,
+                            homeLink: section.homeLink,
+                            catalogListItems: uniqueItems
+                        )
+                    }
 
                 } else {
-
                     // Next pages
                     allSections = mergeSections(
                         existing: allSections,
                         new: tableSections
                     )
                 }
+
+            
                 // Update current page
 
                 currentPage = page
@@ -306,7 +322,6 @@ final class HomeViewModel {
 
         var result = existing
 
-
         for newSection in new {
 
             guard let existingIndex =
@@ -317,41 +332,40 @@ final class HomeViewModel {
                         }
                     )
             else {
-
                 result.append(newSection)
-
                 continue
             }
 
             // Existing section
-
             let existingSection =
                 result[existingIndex]
-
 
             let existingItems =
                 existingSection.catalogListItems ?? []
 
-
             let newItems =
                 newSection.catalogListItems ?? []
 
+            // Remove duplicate content IDs
+            var seenIDs = Set<String>()
 
-            let mergedItems =
-                existingItems + newItems
+            let mergedItems = (existingItems + newItems).filter { item in
 
+                guard seenIDs.insert(item.contentID).inserted else {
+                    return false
+                }
+
+                return true
+            }
 
             result[existingIndex] =
                 HomeSection(
                     displayTitle:
                         existingSection.displayTitle,
-
                     friendlyID:
                         existingSection.friendlyID,
-
                     homeLink:
                         existingSection.homeLink,
-
                     catalogListItems:
                         mergedItems
                 )

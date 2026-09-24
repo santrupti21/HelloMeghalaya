@@ -241,6 +241,7 @@ extension ViewController: UITableViewDataSource {
             print("Selected from ViewController:", item.displayTitle ?? "")
             print("Catalog ID:", item.catalogID)
             print("Content ID:", item.contentID)
+            print("Layout Type:", item.catalogObject?.layoutType ?? "nil")
 
             let movieDetailsViewModel = MovieDetailsViewModel(
                 catalogId: item.catalogID,

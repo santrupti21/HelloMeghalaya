@@ -13,6 +13,7 @@ enum APIError: Error {
     case invalidURL
     case invalidResponse
     case httpError(statusCode: Int)
+   
 }
 
 
@@ -83,7 +84,8 @@ enum APIEndpoint {
     case mediaitem(catalogID: String, contentID: String) //details
     case consolidatedItemStateV3
     case recomended(catalogId: String)
-
+    case episodes(subcategotyID: String)
+    
     var path: String {
 
         switch self {
@@ -105,6 +107,9 @@ enum APIEndpoint {
             
         case .recomended(let catalogID):
             return "/catalogs/\(catalogID)/items.gzip"
+            
+        case .episodes(let subcategoryID):
+            return "/catalogs/shows/subcategories/\(subcategoryID)/episodes.gzip"
         }
     }
 }

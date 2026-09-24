@@ -270,6 +270,31 @@ final class HomeService {
         return response.data.items
         
     }
+    
+    func fetchEpisodes(subcategoryID: String) async throws -> [Episode] {
+        
+        guard var components = URLComponents(string: APIConfiguration.baseURL + APIEndpoint.episodes(subcategotyID: subcategoryID).path) else {
+            throw APIError.invalidURL
+        }
+        
+        components.queryItems = [
+            URLQueryItem(name: "order_by", value: "desc"),
+                   URLQueryItem(name: "status", value: "published"),
+                   URLQueryItem(name: "auth_token", value: APIConfiguration.authToken),
+                   URLQueryItem(name: "region", value: APIConfiguration.region),
+                   URLQueryItem(name: "item_language", value: APIConfiguration.itemLanguage)
+        ]
+        
+        guard let url = components.url else {
+            throw APIError.invalidURL
+        }
+        print("Calling Episodes API:", url)
+        
+        let response: EpisodeResponse = try await APIClient.shared.request(url)
+        print("Episodes receivee d:", response.data.items.count)
+        
+        return response.data.items
+    }
 }
 private extension HomeService {
 
