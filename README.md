@@ -1,21 +1,4 @@
 
-this format
-
-Yes. I prepared the README with everything you worked on today — buffering, HLS quality, playback speed, fullscreen/orientation, landscape title/back button, and player controls.
-
-I can add it directly to your GitHub repository once GitHub is connected to ChatGPT.
-
-For now, you can also download the prepared README:
-
-Download README.md
-
-After connecting GitHub, tell me “connected” and I can continue with the GitHub action.
-
-
-README.md
-Document
-
-
 HelloMeghalaya
 HelloMeghalaya is an iOS application built using Swift and UIKit.
 
