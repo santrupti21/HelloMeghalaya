@@ -328,3 +328,25 @@ extension CategoryViewController: UICollectionViewDelegateFlowLayout {
         loadNextPage()
     }
 }
+extension CategoryViewController: UICollectionViewDelegate {
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        let item = items[indexPath.item]
+
+        if item.catalogObject?.friendlyID == "shorts" {
+            let shortsVC = ShortsViewController(selectedContentID: item.contentID)
+            
+            navigationController?.pushViewController(shortsVC, animated: true)
+            return
+        }
+        
+        let viewModel = MovieDetailsViewModel(catalogId: item.catalogID, contentId: item.contentID)
+        
+        let detailsVC = MovieDetailsViewController(viewModel: viewModel)
+        
+        navigationController?.pushViewController(detailsVC, animated: true)
+    }
+}

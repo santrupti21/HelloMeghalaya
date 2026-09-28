@@ -10,6 +10,11 @@
 		FF02B64A303821CD006FCBE7 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF02B649303821CD006FCBE7 /* ImageCache.swift */; };
 		FF035F22305D01330010ECCC /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF035F21305D01330010ECCC /* APIClient.swift */; };
 		FF035F24305D127F0010ECCC /* RecomendedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF035F23305D127F0010ECCC /* RecomendedResponse.swift */; };
+		FF0652FD3066398E0057F6C0 /* ShortsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0652FC3066398E0057F6C0 /* ShortsResponse.swift */; };
+		FF0652FF30663CBD0057F6C0 /* ShortsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0652FE30663CBD0057F6C0 /* ShortsService.swift */; };
+		FF065301306640B00057F6C0 /* ShortsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF065300306640B00057F6C0 /* ShortsViewModel.swift */; };
+		FF065303306645A70057F6C0 /* ShortsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF065302306645A70057F6C0 /* ShortsViewController.swift */; };
+		FF06530530666FE80057F6C0 /* ShortsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF06530430666FE80057F6C0 /* ShortsTableViewCell.swift */; };
 		FF0866CB30468E060089BEA2 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0866CA30468E060089BEA2 /* SearchViewController.swift */; };
 		FF0866CD30469F4E0089BEA2 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0866CC30469F4E0089BEA2 /* SearchViewModel.swift */; };
 		FF0866CF3046CA4E0089BEA2 /* SearchCollectionViewcell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0866CE3046CA4E0089BEA2 /* SearchCollectionViewcell.swift */; };
@@ -52,6 +57,11 @@
 		FF02B649303821CD006FCBE7 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		FF035F21305D01330010ECCC /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		FF035F23305D127F0010ECCC /* RecomendedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecomendedResponse.swift; sourceTree = "<group>"; };
+		FF0652FC3066398E0057F6C0 /* ShortsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsResponse.swift; sourceTree = "<group>"; };
+		FF0652FE30663CBD0057F6C0 /* ShortsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsService.swift; sourceTree = "<group>"; };
+		FF065300306640B00057F6C0 /* ShortsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsViewModel.swift; sourceTree = "<group>"; };
+		FF065302306645A70057F6C0 /* ShortsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsViewController.swift; sourceTree = "<group>"; };
+		FF06530430666FE80057F6C0 /* ShortsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsTableViewCell.swift; sourceTree = "<group>"; };
 		FF0866CA30468E060089BEA2 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		FF0866CC30469F4E0089BEA2 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		FF0866CE3046CA4E0089BEA2 /* SearchCollectionViewcell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCollectionViewcell.swift; sourceTree = "<group>"; };
@@ -124,6 +134,7 @@
 				FF0E6C12304FCE74000CA478 /* webViewController.swift */,
 				FF28106E3050018C0011578C /* ContentLanguageViewController.swift */,
 				FFFEB6BF3051395900E01139 /* MovieDetailsViewController.swift */,
+				FF065302306645A70057F6C0 /* ShortsViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -134,6 +145,7 @@
 				FF1DB0A930332EE7000D1526 /* HomeViewModel.swift */,
 				FF0866CC30469F4E0089BEA2 /* SearchViewModel.swift */,
 				FFFEB6BD3051316800E01139 /* MovieDetailsViewModel.swift */,
+				FF065300306640B00057F6C0 /* ShortsViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -148,6 +160,7 @@
 				FFE4D52E305BFDF2002E62C2 /* ConsolidatedItemStateResponse.swift */,
 				FF035F23305D127F0010ECCC /* RecomendedResponse.swift */,
 				FFF95FB73063D20A00AE9BC4 /* Episode.swift */,
+				FF0652FC3066398E0057F6C0 /* ShortsResponse.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -158,6 +171,7 @@
 				FF6668B730345DCE00B6790D /* HomeSectionTableViewCell.swift */,
 				FF41066530356399005C1D28 /* HomeBannerTableViewCell.swift */,
 				FF2118193049516700398295 /* MoreTableViewCell.swift */,
+				FF06530430666FE80057F6C0 /* ShortsTableViewCell.swift */,
 			);
 			path = TableView;
 			sourceTree = "<group>";
@@ -233,6 +247,7 @@
 				FF219425302EF4BA0013AD8B /* HomeService.swift */,
 				FFC085EF3036BB670083E4CC /* ImageService.swift */,
 				FF035F21305D01330010ECCC /* APIClient.swift */,
+				FF0652FE30663CBD0057F6C0 /* ShortsService.swift */,
 				FF02B64B3038311B006FCBE7 /* Cache */,
 			);
 			path = Network;
@@ -313,9 +328,11 @@
 				FFFEB6BC3051253B00E01139 /* MovieDetailsResponse.swift in Sources */,
 				FF035F24305D127F0010ECCC /* RecomendedResponse.swift in Sources */,
 				FF21181A3049516700398295 /* MoreTableViewCell.swift in Sources */,
+				FF06530530666FE80057F6C0 /* ShortsTableViewCell.swift in Sources */,
 				FF41066630356399005C1D28 /* HomeBannerTableViewCell.swift in Sources */,
 				FFEE7BE5302C7BCA00A55FA2 /* CatalogTabResponse.swift in Sources */,
 				FF035F22305D01330010ECCC /* APIClient.swift in Sources */,
+				FF065303306645A70057F6C0 /* ShortsViewController.swift in Sources */,
 				FF02B64A303821CD006FCBE7 /* ImageCache.swift in Sources */,
 				FFE4D52F305BFDF2002E62C2 /* ConsolidatedItemStateResponse.swift in Sources */,
 				FFEE7BD5302C7B5C00A55FA2 /* ViewController.swift in Sources */,
@@ -323,6 +340,7 @@
 				FFFEB6C03051395900E01139 /* MovieDetailsViewController.swift in Sources */,
 				FFEE7BD1302C7B5C00A55FA2 /* AppDelegate.swift in Sources */,
 				FFEE7BE9302C7C2800A55FA2 /* CatalogTabCell.swift in Sources */,
+				FF0652FF30663CBD0057F6C0 /* ShortsService.swift in Sources */,
 				FFEE7BD3302C7B5C00A55FA2 /* SceneDelegate.swift in Sources */,
 				FF21942C302F1AF70013AD8B /* HomeSliderCell.swift in Sources */,
 				FFC085F03036BB670083E4CC /* ImageService.swift in Sources */,
@@ -330,12 +348,14 @@
 				FF1DB0AA30332EE7000D1526 /* HomeViewModel.swift in Sources */,
 				FFBCA81C3037201D00E9C206 /* MainTabBarController.swift in Sources */,
 				FF219424302EE4430013AD8B /* HomeResponse.swift in Sources */,
+				FF0652FD3066398E0057F6C0 /* ShortsResponse.swift in Sources */,
 				FF219426302EF4BA0013AD8B /* HomeService.swift in Sources */,
 				FF6668B830345DCE00B6790D /* HomeSectionTableViewCell.swift in Sources */,
 				FFF95FB83063D20A00AE9BC4 /* Episode.swift in Sources */,
 				FF0866CB30468E060089BEA2 /* SearchViewController.swift in Sources */,
 				FFFEB6BE3051316800E01139 /* MovieDetailsViewModel.swift in Sources */,
 				FFEE7BEB302C7C5B00A55FA2 /* NavigationBarView.swift in Sources */,
+				FF065301306640B00057F6C0 /* ShortsViewModel.swift in Sources */,
 				FF0900E83045A0150020A519 /* SearchResponse.swift in Sources */,
 				FFFE820C303EB864003EA8D9 /* CategoryViewController.swift in Sources */,
 				FF0866CF3046CA4E0089BEA2 /* SearchCollectionViewcell.swift in Sources */,

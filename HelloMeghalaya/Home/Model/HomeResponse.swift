@@ -58,9 +58,12 @@ struct HomeItem: Decodable {
 
 struct CatalogObject: Decodable {
     
+    let friendlyID: String?
     let layoutType: String?
     
     enum CodingKeys: String, CodingKey {
+        
+        case friendlyID = "friendly_id"
         case layoutType = "layout_type"
     }
 }

@@ -232,30 +232,43 @@ extension ViewController: UITableViewDataSource {
                 categoryViewController,
                 animated: true
             )
-        }, onItemSelected: { [weak self] item in
-            
-            guard let self else {
-                return
+        },onItemSelected: { [weak self] item in
+            guard let self else { return }
+
+            print("Selected item:", item.displayTitle ?? "")
+            print("Section friendlyID:", section.friendlyID)
+
+            // If the selected image belongs to Snippets
+            if section.friendlyID == "shorts" {
+
+                let shortsViewController = ShortsViewController(
+                    selectedContentID: item.contentID)
+
+          //      shortsViewController.hidesBottomBarWhenPushed = true
+
+                
+                self.navigationController?.pushViewController(
+                    shortsViewController,
+                    animated: true
+                )
+
+            } else {
+
+                // For all other sections, open Movie Details
+                let movieDetailsViewModel = MovieDetailsViewModel(
+                    catalogId: item.catalogID,
+                    contentId: item.contentID
+                )
+
+                let movieDetailsViewController = MovieDetailsViewController(
+                    viewModel: movieDetailsViewModel
+                )
+
+                self.navigationController?.pushViewController(
+                    movieDetailsViewController,
+                    animated: true
+                )
             }
-
-            print("Selected from ViewController:", item.displayTitle ?? "")
-            print("Catalog ID:", item.catalogID)
-            print("Content ID:", item.contentID)
-            print("Layout Type:", item.catalogObject?.layoutType ?? "nil")
-
-            let movieDetailsViewModel = MovieDetailsViewModel(
-                catalogId: item.catalogID,
-                contentId: item.contentID
-            )
-
-            let movieDetailsViewController = MovieDetailsViewController(
-                viewModel: movieDetailsViewModel
-            )
-
-            self.navigationController?.pushViewController(
-                movieDetailsViewController,
-                animated: true
-            )
         }
                        
         )
