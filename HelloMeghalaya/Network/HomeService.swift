@@ -295,6 +295,41 @@ final class HomeService {
         
         return response.data.items
     }
+    
+    func fetchTrailers() async throws -> [HomeItem] {
+        guard var components = URLComponents(
+            string: APIConfiguration.baseURL
+                + APIEndpoint.trailers.path
+        ) else {
+            throw APIError.invalidURL
+        }
+
+        components.queryItems = [
+            URLQueryItem(
+                name: "auth_token",
+                value: APIConfiguration.authToken
+            ),
+            URLQueryItem(
+                name: "region",
+                value: APIConfiguration.region
+            ),
+            URLQueryItem(
+                name: "item_language",
+                value: APIConfiguration.itemLanguage
+            )
+        ]
+
+        guard let url = components.url else {
+            throw APIError.invalidURL
+        }
+
+        let response: TrailersResponse =
+            try await APIClient.shared.request(url)
+
+        print("Trailers API items:", response.data.catalogListItems.count)
+
+        return response.data.catalogListItems
+    }
 }
 private extension HomeService {
 

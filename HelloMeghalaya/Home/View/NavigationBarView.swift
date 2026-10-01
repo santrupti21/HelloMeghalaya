@@ -16,7 +16,11 @@ final class NavigationBarView: UIView {
 
     private let collectionView: UICollectionView
 
-
+    var showsTabs = true {
+        didSet {
+            collectionView.isHidden = !showsTabs
+        }
+    }
     private var tabs: [CatalogTab] = []
 
     private var selectedIndex = 0 //keep track of which index is selected
@@ -139,6 +143,8 @@ final class NavigationBarView: UIView {
         ])
     }
     private func setupCollectionView() {
+        
+        collectionView.isHidden = !showsTabs
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.dataSource = self

@@ -21,7 +21,7 @@ final class MainTabBarController: UITabBarController {
         let homeNavigationController = UINavigationController(rootViewController: homeViewController)
         homeNavigationController.setNavigationBarHidden(true, animated: false) // Hiding the nav bar
         
-        let trailerViewController = UIViewController()
+        let trailerViewController = TrailersViewController()
         let downloadsViewController = UIViewController()
         
         let moreViewController = MoreViewController()

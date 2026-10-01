@@ -45,6 +45,8 @@ struct HomeItem: Decodable {
     let catalogID: String
     let thumbnails: HomeThumbnails?
     let catalogObject: CatalogObject?
+    let itemCaption: String?
+    let durationString: String?
     
     enum CodingKeys: String, CodingKey {
         case displayTitle = "display_title"
@@ -52,6 +54,8 @@ struct HomeItem: Decodable {
         case catalogID = "catalog_id"
         case thumbnails
         case catalogObject = "catalog_object"
+        case itemCaption = "item_caption"
+        case durationString = "duration_string"
     }
     
 }
@@ -78,6 +82,8 @@ struct HomeThumbnails: Decodable {
     let medium2_3: HomeImage?
     let large2_3: HomeImage?
     
+    let xlImage16_9: HomeImage?
+    
     enum CodingKeys: String, CodingKey {
         case small16_9 = "small_16_9"
         case medium16_9 = "medium_16_9"
@@ -86,6 +92,8 @@ struct HomeThumbnails: Decodable {
         case small2_3 = "small_2_3"
         case medium2_3 = "medium_2_3"
         case large2_3 = "large_2_3"
+        
+        case xlImage16_9 = "xl_image_16_9"
         
     }
     

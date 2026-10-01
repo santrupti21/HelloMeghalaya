@@ -1575,11 +1575,19 @@ final class MovieDetailsViewController: UIViewController {
         [.portrait, .landscape]
     }
     
-    
-    
     @objc private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+        if let navigationController,
+           navigationController.viewControllers.first !== self {
+
+            navigationController.popViewController(animated: true)
+
+        } else {
+
+            dismiss(animated: true)
+        }
     }
+    
+   
     
     @objc private func descriptionToggleTapped() {
         let isExpanded = descriptionLabel.numberOfLines == 0

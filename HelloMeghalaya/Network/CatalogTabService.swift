@@ -86,6 +86,7 @@ enum APIEndpoint {
     case recomended(catalogId: String)
     case episodes(subcategotyID: String)
     case shorts
+    case trailers
     
     var path: String {
 
@@ -113,6 +114,9 @@ enum APIEndpoint {
             return "/catalogs/shows/subcategories/\(subcategoryID)/episodes.gzip"
         case .shorts:
             return "/catalog_lists/shorts"
+            
+        case .trailers:
+            return "/catalog_lists/coming-soon.gzip"
         }
     }
 }

@@ -29,6 +29,10 @@
 		FF21942C302F1AF70013AD8B /* HomeSliderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF21942B302F1AF70013AD8B /* HomeSliderCell.swift */; };
 		FF28106F3050018C0011578C /* ContentLanguageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF28106E3050018C0011578C /* ContentLanguageViewController.swift */; };
 		FF41066630356399005C1D28 /* HomeBannerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF41066530356399005C1D28 /* HomeBannerTableViewCell.swift */; };
+		FF590396306A682500F892E7 /* TrailersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF590395306A682500F892E7 /* TrailersViewController.swift */; };
+		FF590398306A710900F892E7 /* TrailersResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF590397306A710900F892E7 /* TrailersResponse.swift */; };
+		FF59039A306A751800F892E7 /* TrailersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF590399306A751800F892E7 /* TrailersViewModel.swift */; };
+		FF59039C306A813100F892E7 /* TrailerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF59039B306A813100F892E7 /* TrailerTableViewCell.swift */; };
 		FF6668B830345DCE00B6790D /* HomeSectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6668B730345DCE00B6790D /* HomeSectionTableViewCell.swift */; };
 		FF6668BA3034766A00B6790D /* HomeContentCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6668B93034766900B6790D /* HomeContentCollectionViewCell.swift */; };
 		FFBCA81C3037201D00E9C206 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBCA81B3037201D00E9C206 /* MainTabBarController.swift */; };
@@ -76,6 +80,10 @@
 		FF21942B302F1AF70013AD8B /* HomeSliderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSliderCell.swift; sourceTree = "<group>"; };
 		FF28106E3050018C0011578C /* ContentLanguageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentLanguageViewController.swift; sourceTree = "<group>"; };
 		FF41066530356399005C1D28 /* HomeBannerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBannerTableViewCell.swift; sourceTree = "<group>"; };
+		FF590395306A682500F892E7 /* TrailersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailersViewController.swift; sourceTree = "<group>"; };
+		FF590397306A710900F892E7 /* TrailersResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailersResponse.swift; sourceTree = "<group>"; };
+		FF590399306A751800F892E7 /* TrailersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailersViewModel.swift; sourceTree = "<group>"; };
+		FF59039B306A813100F892E7 /* TrailerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrailerTableViewCell.swift; sourceTree = "<group>"; };
 		FF6668B730345DCE00B6790D /* HomeSectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionTableViewCell.swift; sourceTree = "<group>"; };
 		FF6668B93034766900B6790D /* HomeContentCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContentCollectionViewCell.swift; sourceTree = "<group>"; };
 		FFBCA81B3037201D00E9C206 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
@@ -135,6 +143,7 @@
 				FF28106E3050018C0011578C /* ContentLanguageViewController.swift */,
 				FFFEB6BF3051395900E01139 /* MovieDetailsViewController.swift */,
 				FF065302306645A70057F6C0 /* ShortsViewController.swift */,
+				FF590395306A682500F892E7 /* TrailersViewController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -146,6 +155,7 @@
 				FF0866CC30469F4E0089BEA2 /* SearchViewModel.swift */,
 				FFFEB6BD3051316800E01139 /* MovieDetailsViewModel.swift */,
 				FF065300306640B00057F6C0 /* ShortsViewModel.swift */,
+				FF590399306A751800F892E7 /* TrailersViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -161,6 +171,7 @@
 				FF035F23305D127F0010ECCC /* RecomendedResponse.swift */,
 				FFF95FB73063D20A00AE9BC4 /* Episode.swift */,
 				FF0652FC3066398E0057F6C0 /* ShortsResponse.swift */,
+				FF590397306A710900F892E7 /* TrailersResponse.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -172,6 +183,7 @@
 				FF41066530356399005C1D28 /* HomeBannerTableViewCell.swift */,
 				FF2118193049516700398295 /* MoreTableViewCell.swift */,
 				FF06530430666FE80057F6C0 /* ShortsTableViewCell.swift */,
+				FF59039B306A813100F892E7 /* TrailerTableViewCell.swift */,
 			);
 			path = TableView;
 			sourceTree = "<group>";
@@ -325,6 +337,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FF0866CD30469F4E0089BEA2 /* SearchViewModel.swift in Sources */,
+				FF59039C306A813100F892E7 /* TrailerTableViewCell.swift in Sources */,
 				FFFEB6BC3051253B00E01139 /* MovieDetailsResponse.swift in Sources */,
 				FF035F24305D127F0010ECCC /* RecomendedResponse.swift in Sources */,
 				FF21181A3049516700398295 /* MoreTableViewCell.swift in Sources */,
@@ -332,6 +345,7 @@
 				FF41066630356399005C1D28 /* HomeBannerTableViewCell.swift in Sources */,
 				FFEE7BE5302C7BCA00A55FA2 /* CatalogTabResponse.swift in Sources */,
 				FF035F22305D01330010ECCC /* APIClient.swift in Sources */,
+				FF590396306A682500F892E7 /* TrailersViewController.swift in Sources */,
 				FF065303306645A70057F6C0 /* ShortsViewController.swift in Sources */,
 				FF02B64A303821CD006FCBE7 /* ImageCache.swift in Sources */,
 				FFE4D52F305BFDF2002E62C2 /* ConsolidatedItemStateResponse.swift in Sources */,
@@ -339,6 +353,7 @@
 				FF6668BA3034766A00B6790D /* HomeContentCollectionViewCell.swift in Sources */,
 				FFFEB6C03051395900E01139 /* MovieDetailsViewController.swift in Sources */,
 				FFEE7BD1302C7B5C00A55FA2 /* AppDelegate.swift in Sources */,
+				FF59039A306A751800F892E7 /* TrailersViewModel.swift in Sources */,
 				FFEE7BE9302C7C2800A55FA2 /* CatalogTabCell.swift in Sources */,
 				FF0652FF30663CBD0057F6C0 /* ShortsService.swift in Sources */,
 				FFEE7BD3302C7B5C00A55FA2 /* SceneDelegate.swift in Sources */,
@@ -351,6 +366,7 @@
 				FF0652FD3066398E0057F6C0 /* ShortsResponse.swift in Sources */,
 				FF219426302EF4BA0013AD8B /* HomeService.swift in Sources */,
 				FF6668B830345DCE00B6790D /* HomeSectionTableViewCell.swift in Sources */,
+				FF590398306A710900F892E7 /* TrailersResponse.swift in Sources */,
 				FFF95FB83063D20A00AE9BC4 /* Episode.swift in Sources */,
 				FF0866CB30468E060089BEA2 /* SearchViewController.swift in Sources */,
 				FFFEB6BE3051316800E01139 /* MovieDetailsViewModel.swift in Sources */,

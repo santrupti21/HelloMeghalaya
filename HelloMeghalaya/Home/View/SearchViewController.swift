@@ -138,7 +138,14 @@ final class SearchViewController: UIViewController {
         
     }
     @objc private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+        if let navigationController,
+           navigationController.viewControllers.first === self {
+            // Search screen was presented modally
+            dismiss(animated: true)
+        } else {
+            // Search screen was pushed onto an existing stack
+            navigationController?.popViewController(animated: true)
+        }
     }
     
     @objc private func clearButtonTapped() {
